@@ -6,7 +6,7 @@
 4. [Troubleshooting](#troubleshooting)
 
 ## Introduction
-Scripting on nnounce devices is available using Deno JavaScript runtime. Scripts are written in TypeScript.  
+Scripting on nnounce devices is available using Deno JavaScript runtime. Scripts are written in TypeScript. Using Visual Studio Code for nnounce scripting enables debugging the scripts.  
 
 All sources are included in the [vsc_project](./vsc_project) folder.
 
@@ -132,3 +132,7 @@ If VS Code highlights imports from `import_map.json` as errors before first run,
 ![Quick Fix](./img/quick_fix.png)  
 ![Cache dependency](./img/cache_dependency.png)
 2. **Run the Application**: If IDE does not present Quick Fix option, try running the application. This should either resolve the issue or enable the Quick Fix option.
+
+---
+
+This tutorial covered setup of nnounce scripting from Visual Studio Code. Happy coding!
