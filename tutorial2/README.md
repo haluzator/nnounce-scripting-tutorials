@@ -34,7 +34,9 @@ More details on variables can be found in the nnounce configuration guide at [ht
 ## Updating the script
 Now that we have our variable set, we can update the background script from the [previous tutorial](../tutorial2/README.md).
 
-The updated script will look as follows:
+1. Navigate to the **Scripting** tab
+2. Click on saved script
+3. Paste code below
 ```javascript
 // import required modules
 import { nnControlInputs } from "nnControlInputs";  // for control input handling
@@ -95,6 +97,8 @@ async function sendGetRequest(variableValue: string) {
 	}
 }
 ```
+4. Click the **Save & Exit** button
+
 More details on scripting can be found in the nnounce configuration guide at [https://docs.simpleway.cloud/nnounce/docs/scripting](https://docs.simpleway.cloud/nnounce/docs/scripting).
 
 ## Triggering the input

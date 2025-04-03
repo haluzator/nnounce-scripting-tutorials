@@ -68,7 +68,11 @@ More details on streaming setup can be found in the nnounce configuration guide 
 ## Writing the script
 With the file uploaded and design deployed, we now create a script that plays the file when input pin is triggered.
 
-Use the following script:
+1. Navigate to the **Scripting** tab
+2. Click the **+** button
+3. Fill-in name input field
+4. Select **Background** mode
+5. Paste script below
 ```javascript
 // import required modules
 import { nnControlInputs } from "nnControlInputs"; // for control input handling
@@ -106,6 +110,8 @@ nnControlInputs.digital(1) // use pin 1 in digital mode, pins are numbered from 
         }
     });
 ```
+6. Click the **Save & Exit** button
+
 More details on scripting can be found in the nnounce configuration guide at [https://docs.simpleway.cloud/nnounce/docs/scripting](https://docs.simpleway.cloud/nnounce/docs/scripting).
 
 ## Triggering the input
