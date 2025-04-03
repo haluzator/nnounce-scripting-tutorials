@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "request": "launch",
+            "name": "Launch Program",
+            "type": "node",
+            "program": "${workspaceFolder}/app/main.ts",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "C:/ProgramData/chocolatey/lib/deno/deno.exe",
+            "runtimeArgs": [
+                "run",
+                "--import-map",
+                "./app/import_map.json",
+                "--inspect-wait",
+                "--allow-env",
+                "--allow-net",
+                "--reload",
+                "--unsafely-ignore-certificate-errors",
+                "--allow-import"
+            ],
+            "attachSimplePort": 9229,
+            "env": {
+                "HOSTNAME": "ampnode4-900094",
+                "PORT": "443",
+                "API-KEY": "1078f2ac1e1f1a043e8b8833050b979448107480909e07cbc36b3eeccd42c944"
+            }
+        }
+    ]
+}
