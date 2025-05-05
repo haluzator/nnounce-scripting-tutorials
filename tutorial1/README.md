@@ -43,7 +43,7 @@ Ensure that you:
 You should now see your file listed in the **Files** tab.
 ![Files tab with uploaded file](./img/files.png)
 
-More detials on file management can be found in the nnounce configuration guide at [https://docs.simpleway.cloud/nnounce/docs/file-manager](https://docs.simpleway.cloud/nnounce/docs/file-manager).
+More details on file management can be found in the nnounce configuration guide at [https://docs.simpleway.cloud/nnounce/docs/file-manager](https://docs.simpleway.cloud/nnounce/docs/file-manager).
 
 ## Creating and deploying a design
 To play a local file, the device needs a minimal design setup, including a Router component and and output - either Analog/Amplifier Out or Net TX or both.
@@ -74,41 +74,42 @@ With the file uploaded and design deployed, we now create a script that plays th
 4. Select **Background** mode
 5. Paste script below
 ```javascript
-// import required modules
-import { nnControlInputs } from "nnControlInputs"; // for control input handling
-import { nnPagingRouter } from "nnPagingRouter"; // for playing local files
+// import connection function
+import { nnounceDevice } from "nnounceDevice";
 
 // let the user know the script started
 console.log("Starting tutorial script 1");
 
+const device = await nnounceDevice(false);
+
 let playbackAvailable = true; // cooldown flag
 
-nnControlInputs.digital(1) // use pin 1 in digital mode, pins are numbered from 1
-    .onChange((val) => {  // function to handle input value changes
-        console.log(`Change on digital input 1 - current value: ${val}`); // log current input pin value
-        if (val) { // if pin is high (true)...
-			if (!playbackAvailable) {  // if cooldown is active, log and return
-				console.log("Playback not available yet");
-				return;
+device.controlInputs.digital(1) // use pin 1 in digital mode, pins are numbered from 1
+		.onChange((val) => {  // function to handle input value changes
+			console.log(`Change on digital input 1 - current value: ${val}`); // log current input pin value
+			if (val) { // if pin is high (true)...
+				if (!playbackAvailable) {  // if cooldown is active, log and return
+					console.log("Playback not available yet");
+					return;
+				}
+				device.pagingRouter.playLocalFile(  // cooldown ready, proceed to play local file
+						{
+							priority: 2,  // priority - the lower the number, the higher the priority
+							audioFilePath: "sample.mp3", // file path
+							outputs: ["out1"]   // list of router outputs the file will be played to
+						}
+				);
+				console.log(`Playing local file test.mp3`); // let the user know the file is playing
+				playbackAvailable = false;  // disable playback
+				setTimeout( // re-enable playback after 60s cooldown
+						() => {
+							console.log("Playback available");
+							playbackAvailable = true;
+						},
+						60000,
+				);
 			}
-            nnPagingRouter.playLocalFile(  // cooldown ready, proceed to play local file
-                {
-                    priority: 2,  // priority - the lower the number, the higher the priority
-                    audioFilePath: "sample.mp3", // file path
-                    outputs: ["out1"]   // list of router outputs file will be played to 
-                }
-            );
-            console.log(`Playing local file test.mp3`); // let the user know the file is playing
-			playbackAvailable = false;  // disable playback
-			setTimeout( // re-enable playback after 60s cooldown
-					() => {
-						console.log("Playback available");
-						playbackAvailable = true;
-					},
-					60000,
-			);
-        }
-    });
+		});
 ```
 6. Click the **Save & Exit** button
 

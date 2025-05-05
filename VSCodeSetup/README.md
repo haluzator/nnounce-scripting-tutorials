@@ -8,6 +8,8 @@
 ## Introduction
 Scripting on nnounce devices is available using Deno JavaScript runtime. Scripts are written in TypeScript. Using Visual Studio Code for nnounce scripting enables debugging the scripts.  
 
+This tutorial is focused on Visual Studio Code, but using other IDEs is possible.
+
 All sources are included in the [vsc_project](./vsc_project) folder.
 
 This tutorial was tested with Deno version 2.2.6.
@@ -41,20 +43,14 @@ To enable scripting on nnounce devices from Visual Studio Code, follow these ste
             "runtimeExecutable": "<path to deno.exe>",
             "runtimeArgs": [
                 "run",
-                "--import-map",
-                "./app/import_map.json",
+                "--reload",
                 "--inspect-wait",
                 "--allow-env",
                 "--allow-net",
                 "--unsafely-ignore-certificate-errors",
                 "--allow-import"
             ],
-            "attachSimplePort": 9229,
-            "env": {
-                "HOSTNAME": "<hostname>",
-                "PORT": "443",
-                "API-KEY": "<api-key>"
-            }
+            "attachSimplePort": 9229
         }
     ]
 }
@@ -62,57 +58,30 @@ To enable scripting on nnounce devices from Visual Studio Code, follow these ste
 Configuration parameters explained:
 - `program`: path to main file which is executed during run
 - `runtimeExecutable`: path to deno.exe file
-- `runtimeArgs`: arguments passed to Deno executable 
-  - `-import-map`: path to import map file
+- `runtimeArgs`: arguments passed to Deno executable
+  - `-reload`: forces a fresh download of sources before execution
   - `-inspect-wait`: waits for a debugger (V8 Inspector Protocol) to connect before executing your code
   - `-allow-env`: allows access to environment variables
   - `-allow-net`: grants network access permission
-  - `-reload`: forces a fresh download of sources before execution
   - `--unsafely-ignore-certificate-errors`: ignore certificate errors (nnounce devices use self-signed certificates)
   - `--allow-import`: allows import from non-"public good" registries
 - `attachSimplePort`: specifies the debugging port
-- `env`: environment variables for the program
-  - `HOSTNAME`: hostname or URL of the nnounce device where script will be run
-  - `PORT`: port on which the nnounce server runs
-  - `API-KEY`: api key of user used for sending requests from script to nnounce device
 6. Create the `.vscode/settings.json` file
 ```json
 {
-     "deno.enable": true,
-     "deno.importMap": "./app/import_map.json"
+     "deno.enable": true
 }
 ```
-7. Create the `app/import_map.json` file. Replace placeholders in angle brackets with hostname or IP address of your nnounce device.
-```json
-{
-    "imports": {
-        "nnPagingRouter" : "https://<hostname or ip>/script/api/nnPagingRouter.ts",
-        "nnControlInputs": "https://<hostname or ip>/script/api/nnControlInputs.ts",
-        "nnControlOutputs": "https://<hostname or ip>/script/api/nnControlOutputs.ts",
-        "nnDsp": "https://<hostname or ip>/script/api/nnDsp.ts",
-        "loggerUtil": "https://<hostname or ip>/script/api/utils/LoggerUtil.ts",     
-        "nnSnmp": "https://<hostname or ip>/script/api/nnSnmp.ts",
-        "nnSystem": "https://<hostname or ip>/script/api/nnSystem.ts",
-        "nnUtil": "https://<hostname or ip>/script/api/utils/NnUtil.ts",
-        "initialization": "https://<hostname or ip>/script/api/initialization/ApiInitializer.ts"
-    }
-}
-```
-8. Create the `app/main.ts` file
+7. Create the `app/main.ts` file
 ```typescript
-import { initializeNnounceApi } from "initialization";
-(async () => {
-    await initializeNnounceApi ();
-    await import("./script.ts");
-})();
-```
-9. Create the `app/script.ts` file
-```typescript
+import { connectDevice as ampnode4 } from "https://ampnode4-900094/script/api/nnounceConnector.ts";
+
+const ampApi = await ampnode4("ampnode4-900094", "d56a9ab11ccda15c2ddf2570c3a492d4d33fd46229f114e1679713078244563e", true);
 setInterval(() => {
-    console.log("nnounce just works");
+    ampApi.logger.info("nnounce just works");
 }, 5000);
 ```
-10. Run the application by pressing F5 or navigate to **Run -> Start Debugging**
+8. Run the application by pressing F5 or navigate to **Run -> Start Debugging**
 
 ## Project structure
 Your project directory should look like this:
@@ -121,17 +90,11 @@ Your project directory should look like this:
  ├── launch.json
  ├── settings.json
 app/
- ├── import_map.json
  ├── main.ts
- ├── script.ts
 ```
 
 ## Troubleshooting
-If VS Code highlights imports from `import_map.json` as errors before first run, try these solutions:
-1. **Quick Fix**: Hover over the error, click **Quick Fix** and **Cache "\<import\>" and its dependencies.**  
-![Quick Fix](./img/quick_fix.png)  
-![Cache dependency](./img/cache_dependency.png)
-2. **Run the Application**: If IDE does not present Quick Fix option, try running the application. This should either resolve the issue or enable the Quick Fix option.
+VS Code might highlight the `nnounceConnector.ts` import as error before first run. Run the application, it should resolve the issue.
 
 ---
 

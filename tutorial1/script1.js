@@ -1,13 +1,14 @@
-// import required modules
-import { nnControlInputs } from "nnControlInputs"; // for control input handling
-import { nnPagingRouter } from "nnPagingRouter"; // for playing local files
+// import connection function
+import { nnounceDevice } from "nnounceDevice";
 
 // let the user know the script started
 console.log("Starting tutorial script 1");
 
+const device = await nnounceDevice(false);
+
 let playbackAvailable = true; // cooldown flag
 
-nnControlInputs.digital(1) // use pin 1 in digital mode, pins are numbered from 1
+device.controlInputs.digital(1) // use pin 1 in digital mode, pins are numbered from 1
 		.onChange((val) => {  // function to handle input value changes
 			console.log(`Change on digital input 1 - current value: ${val}`); // log current input pin value
 			if (val) { // if pin is high (true)...
@@ -15,7 +16,7 @@ nnControlInputs.digital(1) // use pin 1 in digital mode, pins are numbered from 
 					console.log("Playback not available yet");
 					return;
 				}
-				nnPagingRouter.playLocalFile(  // cooldown ready, proceed to play local file
+				device.pagingRouter.playLocalFile(  // cooldown ready, proceed to play local file
 						{
 							priority: 2,  // priority - the lower the number, the higher the priority
 							audioFilePath: "sample.mp3", // file path
