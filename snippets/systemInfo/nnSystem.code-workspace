@@ -1,0 +1,263 @@
+{
+	"folders": [
+		{
+        	"name": "root",
+        	"path": "."
+       	},
+		{
+        	"path": "./nnSystem-deviceHostname"
+        },
+        {
+        	"path": "./nnSystem-deviceInterfaces"
+        },
+        {
+        	"path": "./nnSystem-deviceIpv4AddressForSpecifiedInterface"
+        },
+        {
+        	"path": "./nnSystem-deviceIpv6AddressForSpecifiedInterface"
+        },
+        {
+        	"path": "./nnSystem-deviceMacAddressForSpecifiedInterface"
+        },
+        {
+        	"path": "./nnSystem-firmwareVersion"
+        },
+        {
+        	"path": "./nnSystem-model"
+        },
+        {
+        	"path": "./nnSystem-modelType"
+        },
+        {
+        	"path": "./nnSystem-serialNumber"
+        },
+        {
+        	"path": "./nnSystem-version"
+        }
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+         		"request": "launch",
+            	"name": "System information - Device hostname",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-deviceHostname}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-deviceHostname}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "System information - Device interfaces",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-deviceInterfaces}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-deviceInterfaces}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "System information - Device IPv4 address for specified interface",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-deviceIpv4AddressForSpecifiedInterface}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-deviceIpv4AddressForSpecifiedInterface}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "System information - Device IPv6 address for specified interface",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-deviceIpv6AddressForSpecifiedInterface}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-deviceIpv6AddressForSpecifiedInterface}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "System information - Device mac address for specified interface",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-deviceMacAddressForSpecifiedInterface}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-deviceMacAddressForSpecifiedInterface}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "System information - Firmware version",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-firmwareVersion}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-firmwareVersion}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "System information - Model",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-model}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-model}/main.ts",
+            	],
+            	"attachSimplePort": 9229,
+            },
+            {
+            	"request": "launch",
+            	"name": "System information - Model type",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-modelType}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-modelType}/main.ts",
+            	],
+            	"attachSimplePort": 9229,
+            },
+            {
+            	"request": "launch",
+            	"name": "System information - Serial number",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-serialNumber}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-serialNumber}/main.ts",
+            	],
+            	"attachSimplePort": 9229,
+            },
+            {
+            	"request": "launch",
+            	"name": "System information - Version",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:nnSystem-version}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:nnSystem-version}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            }
+		],
+	}
+}

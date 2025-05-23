@@ -1,0 +1,1 @@
+nnApi.dsp.components.netRx(2).setGain(10);

@@ -1,0 +1,138 @@
+{
+	"folders": [
+		{
+    		"name": "root",
+    		"path": "."
+    	},
+		{
+        	"path": "./io-inputControlDigital"
+        },
+        {
+        	"path": "./io-outputControlRelayClose"
+        },
+        {
+        	"path": "./io-outputControlRelayIsClosed"
+        },
+        {
+        	"path": "./io-outputControlRelayIsOpen"
+        },
+        {
+        	"path": "./io-outputControlRelayOpen"
+        }
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+            	"request": "launch",
+            	"name": "Inputs / outputs - Input control digital",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:io-inputControlDigital}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:io-inputControlDigital}/main.ts",
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "Inputs / outputs - Output control relay - close",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:io-outputControlRelayClose}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:io-outputControlRelayClose}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "Inputs / outputs - Output control relay - is closed",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:io-outputControlRelayIsClosed}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:io-outputControlRelayIsClosed}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "Inputs / outputs - Output control relay - is open",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:io-outputControlRelayIsOpen}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:io-outputControlRelayIsOpen}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "Inputs / outputs - Output control relay - open",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:io-outputControlRelayOpen}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:io-outputControlRelayOpen}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            }
+		],
+	}
+}

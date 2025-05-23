@@ -1,0 +1,1 @@
+console.log(`Device interfaces: ${nnApi.system.network.getInterfaces()}`);

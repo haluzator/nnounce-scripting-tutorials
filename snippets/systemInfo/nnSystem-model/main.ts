@@ -1,0 +1,1 @@
+console.log(`Device model is: ${nnApi.system.hw.getModel()}`);

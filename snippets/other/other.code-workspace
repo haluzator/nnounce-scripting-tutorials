@@ -1,0 +1,88 @@
+{
+	"folders": [
+		{
+    		"name": "root",
+    		"path": "."
+    	},
+		{
+    		"path": "./other-enableNnounceScriptApiLogging"
+    	},
+    	{
+    		"path": "./other-subscribeForSnmpTrap"
+    	},
+    	{
+    		"path": "./other-useLogger"
+    	}
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+            	"request": "launch",
+            	"name": "Other - Enable nnounce script API logging",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:other-enableNnounceScriptApiLogging}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:other-enableNnounceScriptApiLogging}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "Other - Subscribe for SNMP trap",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:other-subscribeForSnmpTrap}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:other-subscribeForSnmpTrap}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "Other - Use logger",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:other-useLogger}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:other-useLogger}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            }
+		],
+	}
+}

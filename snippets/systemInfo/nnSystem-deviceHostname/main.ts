@@ -1,0 +1,1 @@
+console.log(`Device hostname is: ${nnApi.system.network.getHostname()}`);

@@ -1,0 +1,1 @@
+console.log(`Device firmware version is: ${nnApi.system.hw.getFirmwareVersion()}`);

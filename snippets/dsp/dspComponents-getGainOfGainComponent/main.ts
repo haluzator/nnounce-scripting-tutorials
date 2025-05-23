@@ -1,0 +1,1 @@
+console.log(`The "gain" of gain component with ID 1 is: ${nnApi.dsp.components.gain(1).getGain()}`);

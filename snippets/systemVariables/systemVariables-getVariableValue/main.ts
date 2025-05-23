@@ -1,0 +1,1 @@
+console.log(`Variable value: ${nnApi.system.variables.get("nameOfVariable")}`);

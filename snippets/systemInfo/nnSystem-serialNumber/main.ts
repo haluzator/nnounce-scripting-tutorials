@@ -1,0 +1,1 @@
+console.log(`Device serial number is: ${nnApi.system.hw.getSerialNumber()}`);

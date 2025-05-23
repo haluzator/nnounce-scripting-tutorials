@@ -1,0 +1,6 @@
+{
+	"imports": {
+		"nnounceConnector": "./nnounceConnector.ts",
+		"nnounceDevice": "./nnounceDevice.ts"
+	}
+}

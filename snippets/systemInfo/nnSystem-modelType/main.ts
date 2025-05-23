@@ -1,0 +1,1 @@
+console.log(`Device model type is: ${nnApi.system.hw.getModelType()}`);

@@ -1,0 +1,1 @@
+console.log(`Device version is: ${nnApi.system.hw.getVersion()}`);

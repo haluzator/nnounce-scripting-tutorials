@@ -1,0 +1,113 @@
+import{ BiConsumer}from "./utils/FunctionalInterfaces.ts";
+import { InputControl, IOControlStates } from "./ioControl/IOControlStates.ts";
+
+export type DigitalInputPinControl = {
+	/**
+	 * Returns the state of the input pin based on detected voltage.
+	 *
+	 * If the voltage at the pin is at least 60% of the reference voltage, this method returns ```true```;
+	 * otherwise, it returns ```false```.
+	 */
+	getValue: () => boolean;
+	/**
+	 * Registers a callback to listen for changes in the pin's voltage state.
+	 *
+	 * The change is evaluated as a boolean transition: when the voltage crosses the threshold of 60%
+	 * of the reference voltage. This means the voltage either rises from below 60% to above 60%, or
+	 * falls from above 60% to below 60%. The callback is invoked with the new boolean value representing
+	 * the pin's digital state.
+	 *
+	 * @param changeCb the callback function that receives the new pin state as a boolean value
+	 */
+	onChange: { (changeCb: { (value: boolean): void }): void };
+}
+
+/**
+ * Represents a control interface for input pin in analog mode.
+ */
+export type AnalogInputPinControl = {
+	/**
+	 * Returns the current voltage on the pin.
+	 */
+	getValue: () => number;
+	/**
+	 * Registers a callback to be invoked when the voltage on the pin changes.
+	 *
+	 * The callback is triggered whenever there is a change in the pin's voltage. It provides
+	 * the new voltage and the previous voltage as parameters.
+	 *
+	 * @param changeCb the callback function that receives two parameters:
+	 *                 the new voltage (```value```) and the previous voltage (```oldValue```).
+	 */
+
+	onChange: { (changeCb: { (value: number, oldValue: number): void }): void }
+}
+
+/**
+ * Fixed pins - hardcoded in hardware and cannot be changed
+ *
+ * inputs:
+ * - digital | analog
+ */
+export class NnControlInputsDefinition {
+	private static INSTANCE: NnControlInputsDefinition;
+
+	private ioControlStates: IOControlStates;
+
+	private constructor(ioControlStates: IOControlStates) {
+		this.ioControlStates = ioControlStates;
+	}
+
+	/**
+	 * Return singleton instance
+	 */
+	public static getInstance(ioControlStates: IOControlStates) {
+		if (!this.INSTANCE) {
+			this.INSTANCE = new NnControlInputsDefinition(ioControlStates);
+		}
+		return this.INSTANCE;
+	}
+
+	/**
+	 * digital:
+	 * - \>=0.6 - pin is high (has rail voltage) - true
+	 * - 0.0 - pin is low (has 0 voltage) - false
+	 * @param pin numbered from 1
+	 */
+	public digital(pin: number): DigitalInputPinControl {
+		return {
+			getValue: () => this.getInputValue(pin) >= 0.6,
+			onChange: (onChangeAction) => {
+				this.reactOnInputChange(pin, (value, oldValue) => {
+					const boolValue= value >= 0.6;
+					const oldBoolValue = oldValue >= 0.6;
+					if (boolValue !== oldBoolValue) {
+						onChangeAction(boolValue);
+					}
+				})
+			}
+		}
+	}
+
+	/**
+	 * analog:
+	 * - 1.0 - pin is high (has rail voltage)
+	 * - 0.5 - pin has half of the rail voltage
+	 * - 0.0 - pin is low (has 0 voltage)
+	 * @param pin numbered from 1
+	 */
+	public analog(pin: number): AnalogInputPinControl {
+		return {
+			getValue: () => this.getInputValue(pin),
+			onChange: (onChangeAction) => this.reactOnInputChange(pin, onChangeAction),
+		}
+	}
+
+	private reactOnInputChange(pin: number, changeCallback: BiConsumer<number, number>): InputControl | null {
+		return this.ioControlStates.onInputChange(pin, changeCallback);
+	}
+
+	private getInputValue(pin: number): number {
+		return this.ioControlStates.getInputValue(pin);
+	}
+}

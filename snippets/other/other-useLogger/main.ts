@@ -1,0 +1,1 @@
+nnApi.logger.info("This is logged message");

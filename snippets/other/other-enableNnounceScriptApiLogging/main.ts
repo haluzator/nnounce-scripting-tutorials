@@ -1,0 +1,1 @@
+nnApi.loggerConfig.setEnabledInternal(true);

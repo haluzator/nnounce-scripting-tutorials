@@ -1,0 +1,313 @@
+{
+	"folders": [
+		{
+			"name": "root",
+			"path": "."
+		},
+		{
+			"path": "./dspComponents-getGainOfGainComponent"
+		},
+		{
+			"path": "./dspComponents-getGainOfNetRxComponent"
+		},
+		{
+			"path": "./dspComponents-getGainOfNetTxComponent"
+		},
+		{
+			"path": "./dspComponents-getMuteOfGainComponent"
+		},
+		{
+			"path": "./dspComponents-getMuteOfNetRxComponent"
+		},
+		{
+			"path": "./dspComponents-getMuteOfNetTxComponent"
+		},
+		{
+			"path": "./dspComponents-changeGainOfGainComponent"
+		},
+		{
+			"path": "./dspComponents-changeGainOfNetRxComponent"
+		},
+		{
+			"path": "./dspComponents-changeGainOfNetTxComponent"
+		},
+		{
+			"path": "./dspComponents-changeMuteOfGainComponent"
+		},
+		{
+			"path": "./dspComponents-changeMuteOfNetRxComponent"
+		},
+		{
+			"path": "./dspComponents-changeMuteOfNetTxComponent"
+		}
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"request": "launch",
+				"name": "DSP components - Get gain of gain component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-getGainOfGainComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-getGainOfGainComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Get gain of netRx component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-getGainOfNetRxComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-getGainOfNetRxComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Get gain of netTx component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-getGainOfNetTxComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-getGainOfNetTxComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Get mute of gain component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-getMuteOfGainComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-getMuteOfGainComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Get mute of netRx component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-getMuteOfNetRxComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-getMuteOfNetRxComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Get mute of netTx component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-getMuteOfNetTxComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-getMuteOfNetTxComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Change gain of gain component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-changeGainOfGainComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-changeGainOfGainComponent}/main.ts",
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Change gain of netRx component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-changeGainOfNetRxComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-changeGainOfNetRxComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Change gain of netTx component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-changeGainOfNetTxComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-changeGainOfNetTxComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Change mute of gain component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-changeMuteOfGainComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-changeMuteOfGainComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Change mute of netRx component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-changeMuteOfNetRxComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-changeMuteOfNetRxComponent}/main.ts",
+				],
+				"attachSimplePort": 9229
+			},
+			{
+				"request": "launch",
+				"name": "DSP components - Change mute of netTx component",
+				"type": "node",
+				"cwd": "${workspaceFolder:dspComponents-changeMuteOfNetTxComponent}",
+				"runtimeExecutable": "deno",
+				"runtimeArgs": [
+					"run",
+					"--import-map",
+					"./../import_map.json",
+					"--inspect-wait",
+					"--allow-env",
+					"--allow-read",
+					"--allow-net",
+					"--reload",
+					"--unsafely-ignore-certificate-errors",
+					"--allow-import",
+					"../bootstrap.ts",
+					"${workspaceFolder:dspComponents-changeMuteOfNetTxComponent}/main.ts"
+				],
+				"attachSimplePort": 9229
+			}
+		],
+	}
+}

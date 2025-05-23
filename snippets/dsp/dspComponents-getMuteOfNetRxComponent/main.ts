@@ -1,0 +1,1 @@
+console.log(`The netRx component with ID 2 is ${nnApi.dsp.components.netRx(2).isMute() ? "muted" : "unmuted"}`);

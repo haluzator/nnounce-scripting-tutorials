@@ -1,0 +1,88 @@
+{
+	"folders": [
+		{
+    		"name": "root",
+    		"path": "."
+    	},
+		{
+        	"path": "./paRouting-cancelPlayingFile"
+        },
+        {
+        	"path": "./paRouting-playLocalFile"
+        },
+        {
+        	"path": "./paRouting-playRemoteFile"
+        }
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+            	"request": "launch",
+            	"name": "PA router - Cancel playing file",
+            	"type": "node",
+            	"cwd": "./${workspaceFolder:paRouting-cancelPlayingFile}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:paRouting-cancelPlayingFile}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "PA router - Play local file",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:paRouting-playLocalFile}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:paRouting-playLocalFile}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "PA router - Play remote file",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:paRouting-playRemoteFile}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:paRouting-playRemoteFile}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            }
+		],
+	}
+}

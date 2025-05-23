@@ -1,0 +1,1 @@
+console.log(`The gain component with ID 1 is ${nnApi.dsp.components.gain(1).isMute() ? "muted" : "unmuted"}`);

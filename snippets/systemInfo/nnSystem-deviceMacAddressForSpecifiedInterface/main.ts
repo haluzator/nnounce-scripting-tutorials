@@ -1,0 +1,1 @@
+console.log(`Device MAC address of interface 'lan-a' is: ${nnApi.system.network.getMacAddress("lan-a")}`);

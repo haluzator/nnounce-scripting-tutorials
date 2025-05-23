@@ -1,0 +1,1 @@
+console.log(`The "gain" of netTx component with ID 3 is: ${nnApi.dsp.components.netTx(3).getGain()}`);

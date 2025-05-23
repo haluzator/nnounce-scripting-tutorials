@@ -1,0 +1,1 @@
+nnApi.dsp.components.gain(1).setGain(10);

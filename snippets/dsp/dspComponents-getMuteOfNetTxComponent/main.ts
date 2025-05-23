@@ -1,0 +1,1 @@
+console.log(`The netTx component with ID 3 is ${nnApi.dsp.components.netTx(3).isMute() ? "muted" : "unmuted"}`);

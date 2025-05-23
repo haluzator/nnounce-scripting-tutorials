@@ -1,0 +1,1 @@
+console.log(`IPv4 address of interface 'lan-a' is: ${nnApi.system.network.getIp4Address("lan-a")}`);
