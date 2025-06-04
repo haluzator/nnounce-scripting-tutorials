@@ -41,7 +41,7 @@ Ensure that you:
 3. Select and upload your file
 
 You should now see your file listed in the **Files** tab.
-![Files tab with uploaded file](img/files.png)
+![Files tab with uploaded file](../../img/examples/tutorial1/files.png)
 
 More details on file management can be found in the nnounce configuration guide at [https://docs.simpleway.cloud/nnounce/docs/file-manager](https://docs.simpleway.cloud/nnounce/docs/file-manager).
 
@@ -57,7 +57,7 @@ To play a local file, the device needs a minimal design setup, including a Route
 7. Click the **Deploy Design** button
 
 Your design should resemble this:
-![Minimal design](img/design.png)
+![Minimal design](../../img/examples/tutorial1/design.png)
 
 To hear playback, connect speakers to the device audio output or configure a stream to listen to it.
 
@@ -73,18 +73,13 @@ With the file uploaded and design deployed, we now create a script that plays th
 3. Fill-in name input field
 4. Select **Background** mode
 5. Paste script below
-```javascript
-// import connection function
-import { nnounceDevice } from "nnounceDevice";
-
+```typescript
 // let the user know the script started
 console.log("Starting tutorial script 1");
 
-const device = await nnounceDevice(false);
-
 let playbackAvailable = true; // cooldown flag
 
-device.controlInputs.digital(1) // use pin 1 in digital mode, pins are numbered from 1
+nnApi.controlInputs.digital(1) // use pin 1 in digital mode, pins are numbered from 1
 		.onChange((val) => {  // function to handle input value changes
 			console.log(`Change on digital input 1 - current value: ${val}`); // log current input pin value
 			if (val) { // if pin is high (true)...
@@ -92,14 +87,14 @@ device.controlInputs.digital(1) // use pin 1 in digital mode, pins are numbered 
 					console.log("Playback not available yet");
 					return;
 				}
-				device.pagingRouter.playLocalFile(  // cooldown ready, proceed to play local file
+				nnApi.pagingRouter.playLocalFile(  // cooldown ready, proceed to play local file
 						{
 							priority: 2,  // priority - the lower the number, the higher the priority
 							audioFilePath: "sample.mp3", // file path
 							outputs: ["out1"]   // list of router outputs the file will be played to
 						}
 				);
-				console.log(`Playing local file test.mp3`); // let the user know the file is playing
+				console.log(`Playing local file sample.mp3`); // let the user know the file is playing
 				playbackAvailable = false;  // disable playback
 				setTimeout( // re-enable playback after 60s cooldown
 						() => {
@@ -119,10 +114,10 @@ More details on scripting can be found in the nnounce configuration guide at [ht
 
 Pin schematics for ampnode4 and ionode4:
 
-![ampnode4 schema](img/ampnode4_schema.png)  
+![ampnode4 schema](../../img/examples/tutorial1/ampnode4_schema.png)  
 More details on ampnode4 features can be found in the nnounce installation guide at [https://docs.simpleway.cloud/nnounce/docs/features-ampnode4](https://docs.simpleway.cloud/nnounce/docs/features-ampnode4).
 
-![ionode4 schema](img/ionode4_schema.png)  
+![ionode4 schema](../../img/examples/tutorial1/ionode4_schema.png)  
 More details on ionode4 features can be found in the nnounce installation guide at [https://docs.simpleway.cloud/nnounce/docs/features-ionode4](https://docs.simpleway.cloud/nnounce/docs/features-ionode4).
 
 More on other products can be found on nnounce website at [https://www.nnounce.com/](https://www.nnounce.com/), or in installation guides at [https://docs.simpleway.cloud/nnounce/docs/installation-guides](https://docs.simpleway.cloud/nnounce/docs/installation-guides).

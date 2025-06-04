@@ -2,7 +2,7 @@ import { WS_MISSING_HEARTBEAT_TIMEOUT_SEC } from "./constants.ts";
 
 export const HOSTNAME = "HOSTNAME";
 export const TOKEN = "TOKEN";
-export const API_KEY = "API-KEY"
+export const API_KEY = "API_KEY"
 
 /**
  * Composes a WebSocket URL using the provided hostname and API key.

@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "request": "launch",
+            "name": "Launch Program",
+            "type": "node",
+            "program": "${workspaceFolder}/main.ts",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "deno",
+            "runtimeArgs": [
+                "run",                
+                "--import-map",
+                "./import_map.json",
+                "--inspect-wait",
+                "--allow-env",
+                "--env-file",
+                "--allow-read",
+                "--allow-net",
+                "--reload",
+                "--unsafely-ignore-certificate-errors",
+				"--allow-import"
+            ],
+            "attachSimplePort": 9229
+        }
+    ]
+}

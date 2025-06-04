@@ -1,14 +1,9 @@
-// import connection function
-import { nnounceDevice } from "nnounceDevice";
-
 // let the user know the script started
 console.log("Starting tutorial script 2");
 
-const device = await nnounceDevice(false);
-
 let playbackAvailable = true;   // cooldown flag
 
-device.controlInputs.digital(1)  // use pin 1 in digital mode, pins are numbered from 1
+nnApi.controlInputs.digital(1)  // use pin 1 in digital mode, pins are numbered from 1
 		.onChange((val) => {    // function to handle input value changes
 			console.log(`Change on digital input 1 - current value: ${val}`);   // log current input pin value
 			if (val) {  // if pin is high (true)...
@@ -16,7 +11,7 @@ device.controlInputs.digital(1)  // use pin 1 in digital mode, pins are numbered
 					console.log("Playback not available yet");
 					return;
 				}
-				device.pagingRouter.playLocalFile(   // cooldown ready, proceed to play local file
+				nnApi.pagingRouter.playLocalFile(   // cooldown ready, proceed to play local file
 						{
 							priority: 2,    // priority - the lower the number, the higher the priority
 							audioFilePath: "sample.mp3",    // file path
@@ -32,7 +27,7 @@ device.controlInputs.digital(1)  // use pin 1 in digital mode, pins are numbered
 						},
 						60000,
 				);
-				const variableValue = device.system.variables.get("tutorial2");  // get our user-defined variable
+				const variableValue = nnApi.system.variables.get("tutorial2");  // get our user-defined variable
 				sendGetRequest(variableValue);  // send the variable value to the echo server
 			}
 		});

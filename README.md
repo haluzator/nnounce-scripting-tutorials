@@ -1,12 +1,22 @@
 # nnounce Scripting Tutorials
 
-These tutorials should serve as introduction to nnounce scripting. Scripts are written using TypeScript.
+These tutorials serve as introduction to nnounce scripting. Scripts are written using TypeScript and are meant to be run in Deno runtime.
 
-The following tutorials are available:  
+This project contains following folders:
+- **snippets** folder contains the simplest snippets aimed to present functions and capabilities of nnounce scripting.
+These scripts are prepared in smaller projects to be run either locally in Visual Studio Code or copied directly into the nnounce scripting UI. 
+You will also find guidelines for Visual Studio Code environment setup [there](snippets/README.md).
+- **examples** folder contains more complex scripts with commentary.
+  - There are two tutorials with code meant to be copied into nnounce scripting UI.
+    - First [tutorial](examples/tutorial1/README.md) guides you through setup and preparations for playing a file when control input is triggered. 
+    - Second [tutorial](examples/tutorial2/README.md) builds on preparations from previous tutorial and adds some complexity. 
+  - Two more tutorials show how to manage nnounce devices locally from Visual Studio Code.
+    - [Mmanaging a single nnounce device](examples/singleDevice/README.md).
+    - [Managing multiple nnounce devices](examples/multipleDevices/README.md).  
+- **SDK** folder contains the nnounce scripting SDK itself, so you can use it in your own projects.
+- **img** folder contains all images used in tutorials and guidelines
 
-1. [Tutorial 1](examples/tutorial1/README.md) – Plays a local file when the control input pin is set high, with a cooldown period.  
-1. [Tutorial 2](examples/tutorial2/README.md) – Builds on Tutorial 1 by retrieving a user-defined variable and sending its value to an echo server via an HTTP request.
-1. [Tutorial 3](examples/VSCodeSetup/README.md) – Guides you through setting up nnounce scripting in Visual Studio Code.
+---
 
 Additional guides and documentation for nnounce devices can be found at [https://docs.simpleway.cloud/nnounce/docs](https://docs.simpleway.cloud/nnounce/docs).
 
