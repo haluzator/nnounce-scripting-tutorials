@@ -11,7 +11,7 @@ You will also find guidelines for Visual Studio Code environment setup [there](s
     - First [tutorial](examples/tutorial1/README.md) guides you through setup and preparations for playing a file when control input is triggered. 
     - Second [tutorial](examples/tutorial2/README.md) builds on preparations from previous tutorial and adds some complexity. 
   - Two more tutorials show how to manage nnounce devices locally from Visual Studio Code.
-    - [Mmanaging a single nnounce device](examples/singleDevice/README.md).
+    - [Managing a single nnounce device](examples/singleDevice/README.md).
     - [Managing multiple nnounce devices](examples/multipleDevices/README.md).  
 - **SDK** folder contains the nnounce scripting SDK itself, so you can use it in your own projects.
 - **img** folder contains all images used in tutorials and guidelines
