@@ -10,6 +10,11 @@ export class NnSnmpDefinition {
 
 	private webSocket: WebSocketCommunication;
 
+	/**
+	 * Creates an instance of the class with a specified WebSocketCommunication object.
+	 *
+	 * @param {WebSocketCommunication} webSocket - The WebSocketCommunication instance used for communication.
+	 */
 	private constructor(webSocket: WebSocketCommunication) {
 		this.webSocket = webSocket;
 	}

@@ -136,6 +136,15 @@ export class WebSocketCommunication {
 		this.eventHandlers.set(type, onEvent);
 	}
 
+	/**
+	 * Subscribes to a specific event by sending a subscription request and registering an event handler.
+	 *
+	 * @param {string} requestType - The type of the subscription request for subscribing to the event.
+	 * @param {string} responseType - The type of the response expected for the event.
+	 * @param {number} dataEveryMs - The interval, in milliseconds, at which the subscription notifications are expected.
+	 * @param {Consumer<IEvent>} onEvent - The consumer function that handles the received event.
+	 * @return {void} Does not return a value.
+	 */
 	public subscribeToEvent(requestType: string, responseType: string, dataEveryMs: number, onEvent: Consumer<IEvent>) {
 		this.eventHandlers.set(responseType, onEvent);
 		// keepAliveMs 0 = forever until websocket is disconnected
@@ -169,6 +178,11 @@ export class WebSocketCommunication {
 		this.sendEvent(eventSubscription, true);
 	}
 
+	/**
+	 * Checks whether the WebSocket connection is currently open and active.
+	 *
+	 * @return {boolean} Returns true if the WebSocket connection exists and is in the OPEN state, otherwise returns false.
+	 */
 	public connected(): boolean {
 		return !!this.socket && this.socket.readyState == WebSocket.OPEN;
 	}

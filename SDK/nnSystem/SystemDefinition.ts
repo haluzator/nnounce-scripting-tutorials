@@ -4,7 +4,10 @@ import { createRequestId, INnounceClientRequestEvent } from "../events/INnounceC
 import { NetworkChangeSubscriptionNotifyEvent } from "../events/incoming/NetworkChangeSubscriptionNotifyEvent.ts";
 import { logger } from "../utils/LoggerUtil.ts";
 
-
+/**
+ * The SystemDefinition class provides methods to retrieve system-related information
+ * such as firmware version, hardware details, and network status using a WebSocket communication channel.
+ */
 export class SystemDefinition {
 	private static INSTANCE: SystemDefinition;
 

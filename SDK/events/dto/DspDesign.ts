@@ -28,6 +28,21 @@ export interface RuntimeUpdateComponentData {
 	data: {[key: string]: ANpdConfig};
 }
 
+/**
+ * Represents the runtime configuration and metadata for a DSP (Digital Signal Processing) design.
+ *
+ * This interface defines the structure for DSP runtime information,
+ * which includes metadata describing the design and a runtime configuration map.
+ *
+ * @interface DspDesignRuntime
+ *
+ * @property metadata
+ * The metadata for the DSP design. Provides descriptive and structural information about the design.
+ *
+ * @property runtime
+ * A key-value mapping where the keys are strings representing configuration identifiers
+ * and the values are ANpdConfig objects that define the actual runtime configurations.
+ */
 export interface DspDesignRuntime {
 	metadata: DesignMetadata;
 	runtime: {[key: string]: ANpdConfig};

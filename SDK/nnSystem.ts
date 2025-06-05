@@ -1,6 +1,11 @@
 import { SystemVariablesControlDefinition } from "./nnSystem/SystemVariablesControlDefinition.ts";
 import { SystemDefinition } from "./nnSystem/SystemDefinition.ts";
 
+/**
+ * Represents a utility for retrieving network-related information such as
+ * available interfaces and corresponding IP addresses, MAC addresses,
+ * and system hostname.
+ */
 export type NetworkStatus = {
 	/**
 	 * Returns an array of available network interface IDs.
@@ -125,11 +130,6 @@ export class NnSystemDefinition {
 	 *  @return {@link NetworkStatus} object
 	 */
 	public network: NetworkStatus = {
-		/**
-		 * Returns an array of available network interface IDs.
-		 *
-		 * @return An array of strings representing network interface IDs
-		 */
 		getInterfaces: () => this.systemNetwork.getInterfaces(),
 		getIp4Address: (interfaceName: string) => this.systemNetwork.getIp4Address(interfaceName),
 		getIp6Address: (interfaceName: string) => this.systemNetwork.getIp6Address(interfaceName),

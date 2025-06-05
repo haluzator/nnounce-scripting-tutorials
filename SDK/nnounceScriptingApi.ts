@@ -65,9 +65,13 @@ export interface NnounceScriptingApi {
 	 * see {@link NnUtilDefinition}
 	 */
 	util: NnUtilDefinition;
-
+	/**
+	 * Function to tell if the device is connected.
+	 */
 	isConnected: () => boolean;
-
+	/**
+	 * Promise of device connection. If you want to block and wait for the device connection, await on this promise.
+	 */
 	connectionPromise: () => Promise<NnounceScriptingApi>;
 }
 
@@ -80,9 +84,14 @@ export interface ConnectionOptions {
 	enableInternalLogging?: boolean;
 }
 
+/**
+ * Represents an NnounceDevice that provides access to various APIs and functionalities
+ * for managing and interacting with an Nnounce device. The class is responsible for
+ * establishing a WebSocket communication, initializing services, and managing key
+ * features such as control inputs, outputs, DSP, logging, and system definitions.
+ * Implements the NnounceScriptingApi interface.
+ */
 export class NnounceDevice implements NnounceScriptingApi {
-	// private hostname: string;
-	// private apiKey: string | null;
 	private connectionOptions: ConnectionOptions;
 	private webSocket: WebSocketCommunication;
 
@@ -99,14 +108,23 @@ export class NnounceDevice implements NnounceScriptingApi {
 	public system: NnSystemDefinition;
 	public util: NnUtilDefinition;
 
+	/**
+	 * Constructs an instance of the service to manage Nnounce device communication and functionality.
+	 *
+	 * @param {string} hostname - The hostname of the Nnounce device to connect to.
+	 * @param {string | null} apiKey - The API key for authentication with the Nnounce device. Null if no API key is required.
+	 * @param {ConnectionOptions} [connectionOptions] - Optional configuration settings for the connection, such as enabling internal logging.
+	 */
 	public constructor(hostname: string, apiKey: string | null, connectionOptions?: ConnectionOptions) {
 		const nnLoggerConfig = NnLoggerConfig.getInstance();
 		nnLoggerConfig.setEnabledInternal(connectionOptions?.enableInternalLogging ?? false);
 
-		// this.hostname = hostname;
-		// this.apiKey = apiKey;
 		this.connectionOptions = connectionOptions;
-		logger.info("Connecting to Nnounce device {} with api key {}", hostname, apiKey);
+		if (apiKey) {
+			logger.info("Connecting to Nnounce device {} with api key {}", hostname, apiKey);
+		} else {
+			logger.info("Connecting to Nnounce device {} without api key", hostname);
+		}
 		const webSocket = new WebSocketCommunication(hostname, apiKey, nnLoggerConfig);
 		this.webSocket = webSocket;
 		const ioControlStates = IOControlStates.getInstance(webSocket, nnLoggerConfig);
@@ -133,14 +151,30 @@ export class NnounceDevice implements NnounceScriptingApi {
 			});
 	}
 
+	/**
+	 * Determines whether the WebSocket connection is currently established.
+	 *
+	 * @return {boolean} True if the WebSocket is connected, false otherwise.
+	 */
 	public isConnected(): boolean {
 		return this.webSocket.connected();
 	}
 
+	/**
+	 * Checks whether the initialization process has been completed.
+	 *
+	 * @return {boolean} Returns true if initialization is complete, otherwise false.
+	 */
 	public isInitialized(): boolean {
 		return this.initDone;
 	}
 
+	/**
+	 * Returns a promise that resolves to an instance of the NnounceScriptingApi.
+	 * This Promise resolves once the WebSocket connection is successful.
+	 *
+	 * @return {Promise<NnounceScriptingApi>} A promise that resolves to the NnounceScriptingApi object.
+	 */
 	public connectionPromise(): Promise<NnounceScriptingApi> {
 		return this._connectionPromise;
 	}

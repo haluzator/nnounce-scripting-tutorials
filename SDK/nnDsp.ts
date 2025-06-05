@@ -6,7 +6,9 @@ import { NnDspComponentControl } from "./dspDesign/components/NnDspComponentCont
 import { WebSocketCommunication } from "./communication/WebSocketCommunication.ts";
 import { NnLoggerConfig } from "./utils/LoggerUtil.ts";
 
-
+/**
+ * Represents the control interface for managing a DSP Ducker's behavior.
+ */
 export interface NnDspDuckerControl {
 	/**
 	 * Registers a listener for the ducker priority input active change event.
@@ -23,6 +25,12 @@ export class NnDspDefinition {
 
 	private _components: NnDspComponent;
 
+	/**
+	 * Private constructor for initializing the components using the provided WebSocket communication and logger configuration.
+	 *
+	 * @param {WebSocketCommunication} webSocket - The WebSocket communication instance used for message exchange.
+	 * @param {NnLoggerConfig} loggerConfig - Configuration instance for logger settings.
+	 */
 	private constructor(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
 		this._components = NnDspComponent.getInstance(webSocket, loggerConfig);
 	}
@@ -34,6 +42,14 @@ export class NnDspDefinition {
 		return this._components;
 	}
 
+	/**
+	 * Retrieves the singleton instance of the NnDspDefinition class. If the instance does not exist, it initializes a new one
+	 * using the provided WebSocketCommunication and logger configuration.
+	 *
+	 * @param {WebSocketCommunication} webSocket - The WebSocket communication instance to be used.
+	 * @param {NnLoggerConfig} loggerConfig - The logger configuration for the instance.
+	 * @return {NnDspDefinition} The singleton instance of NnDspDefinition.
+	 */
 	public static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
 		if (!this.INSTANCE) {
 			this.INSTANCE = new NnDspDefinition(webSocket, loggerConfig);
@@ -51,6 +67,12 @@ export class NnDspComponent {
 	private webSocket: WebSocketCommunication;
 	private loggerConfig: NnLoggerConfig;
 
+	/**
+	 * Constructs an instance of the class with the specified WebSocket communication handler and logger configuration.
+	 *
+	 * @param {WebSocketCommunication} websocket - The WebSocket communication handler used for data transmission.
+	 * @param {NnLoggerConfig} loggerConfig - The configuration settings for the logger.
+	 */
 	private constructor(websocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
 		this.webSocket = websocket;
 		this.loggerConfig = loggerConfig;

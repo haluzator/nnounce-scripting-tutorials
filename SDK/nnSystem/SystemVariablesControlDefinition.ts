@@ -15,11 +15,24 @@ export class SystemVariablesControlDefinition {
 	private systemVariablesMap: Map<string, string>;
 	private initialized: boolean = false;
 
+	/**
+	 * Private constructor for initializing the instance with WebSocket communication and system variables map.
+	 *
+	 * @param {WebSocketCommunication} webSocket - The WebSocket communication instance for handling WebSocket connections.
+	 * @param {Map<string, string>} systemVariablesMap - A map containing key-value pairs of system variables.
+	 */
 	private constructor(webSocket: WebSocketCommunication, systemVariablesMap: Map<string, string>) {
 		this.webSocket = webSocket;
 		this.systemVariablesMap = systemVariablesMap;
 	}
 
+	/**
+	 * Returns the singleton instance of the SystemVariablesControlDefinition.
+	 * If the instance does not exist, it creates one using the provided WebSocketCommunication.
+	 *
+	 * @param {WebSocketCommunication} webSocket - The WebSocketCommunication object used to initialize the instance if it does not exist.
+	 * @return {SystemVariablesControlDefinition} The singleton instance of the SystemVariablesControlDefinition.
+	 */
 	public static getInstance(webSocket: WebSocketCommunication) {
 		if (!this.INSTANCE) {
 			this.INSTANCE = new SystemVariablesControlDefinition(webSocket, new Map());

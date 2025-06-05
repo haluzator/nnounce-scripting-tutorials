@@ -9,7 +9,7 @@ import { connectDevice } from "./nnounceConnector.ts";
  * If no hostname is provided, "localhost" is used.
  * If no api-key is provided, null is used.
  *
- * @param connectionOptions
+ * @param connectionOptions Connection options object
  */
 export function nnounceDevice(connectionOptions?: ConnectionOptions): NnounceScriptingApi {
 	// @ts-ignore Deno - couldn't generate typings file

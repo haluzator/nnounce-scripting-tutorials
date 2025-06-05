@@ -1,5 +1,8 @@
 import { IEvent } from "./IEvent.ts";
 
+/**
+ * Represents a subscription event in the system.
+ */
 export interface ISubscriptionEvent extends IEvent {
 	/**
 	 * If the value is 0, the subscription will remain active until the websocket is disconnected.

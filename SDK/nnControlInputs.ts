@@ -1,6 +1,14 @@
 import{ BiConsumer}from "./utils/FunctionalInterfaces.ts";
 import { InputControl, IOControlStates } from "./ioControl/IOControlStates.ts";
 
+/**
+ * Represents a control interface for input pin in digital mode, capable of reading the pin state and monitoring changes in its state.
+ * Pins are numbered from 1.
+ *
+ * Digital mode returns true or false based on voltage on pin compared to rail voltage.
+ * - \>=0.6 - pin is high (has rail voltage) - true
+ * - 0.0 - pin is low (has 0 voltage) - false
+ */
 export type DigitalInputPinControl = {
 	/**
 	 * Returns the state of the input pin based on detected voltage.
@@ -24,6 +32,12 @@ export type DigitalInputPinControl = {
 
 /**
  * Represents a control interface for input pin in analog mode.
+ * Pins are numbered from 1.
+ *
+ * Analog mode returns ratio between voltage on pin and rail voltage:
+ * - 1.0 - pin is high (has rail voltage)
+ * - 0.5 - pin has half of the rail voltage
+ * - 0.0 - pin is low (has 0 voltage)
  */
 export type AnalogInputPinControl = {
 	/**
@@ -54,6 +68,10 @@ export class NnControlInputsDefinition {
 
 	private ioControlStates: IOControlStates;
 
+	/**
+	 * Constructor for initializing an instance of the class with the given IO control states.
+	 * @param {IOControlStates} ioControlStates - The initial IO control states to be set for the instance.
+	 */
 	private constructor(ioControlStates: IOControlStates) {
 		this.ioControlStates = ioControlStates;
 	}
@@ -69,7 +87,10 @@ export class NnControlInputsDefinition {
 	}
 
 	/**
-	 * digital:
+	 * Get pin control in digital mode. Method param indicates which pin is controlled.
+	 * Pins are numbered from 1.
+	 *
+	 * Digital mode returns true or false based on voltage on pin compared to rail voltage.
 	 * - \>=0.6 - pin is high (has rail voltage) - true
 	 * - 0.0 - pin is low (has 0 voltage) - false
 	 * @param pin numbered from 1
@@ -90,7 +111,10 @@ export class NnControlInputsDefinition {
 	}
 
 	/**
-	 * analog:
+	 * Get pin control in analog mode. Method param indicates which pin is controlled.
+	 * Pins are numbered from 1.
+	 *
+	 * Analog mode returns ratio between voltage on pin and rail voltage:
 	 * - 1.0 - pin is high (has rail voltage)
 	 * - 0.5 - pin has half of the rail voltage
 	 * - 0.0 - pin is low (has 0 voltage)

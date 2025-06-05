@@ -1,5 +1,8 @@
 import { Supplier } from "./FunctionalInterfaces.ts";
 
+/**
+ * Utility class providing methods for executing processes with retry logic.
+ */
 export class RetryUtil {
 
 	/**

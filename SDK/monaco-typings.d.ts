@@ -1227,4 +1227,3 @@ class NnSystemDefinition {
           private stopSentHeartBeat;
           private isHeartbeatTimeout;
       }
-      

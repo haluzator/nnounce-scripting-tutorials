@@ -10,6 +10,14 @@ export interface INnounceClientRequestEvent extends IEvent {
 	requestId: string;
 }
 
+/**
+ * Generates a unique request identifier string.
+ *
+ * Combines a fixed prefix, the current timestamp, and a randomly generated string segment
+ * to produce a unique ID suitable for tracking requests or transactions.
+ *
+ * @return {string} A unique request ID string.
+ */
 export function createRequestId(): string {
 	return `nnScriptApi__${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
 }

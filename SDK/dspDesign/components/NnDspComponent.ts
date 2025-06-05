@@ -9,6 +9,10 @@ import { NnDspComponentControl } from "./NnDspComponentControl.ts";
 
 const CHECK_DESIGN_UPDATE_ATTEMPT: number = 5;
 
+/**
+ * Class representing the runtime metadata of a design component.
+ * Used for managing runtime and design-time configurations and metadata information.
+ */
 class NpdComponentMetadata{
 
 	/**
@@ -17,18 +21,25 @@ class NpdComponentMetadata{
 	 */
 	public readonly npdComponentConfig: ANpdConfig;
 
-
 	/**
 	 * Design runtime part for update
 	 * @protected
 	 */
 	public readonly designRuntime: { [p: string]: ANpdConfig };
+
 	/**
 	 * Design metadata part for update
 	 * @protected
 	 */
 	public readonly designMetadata: DesignMetadata;
 
+	/**
+	 * Creates an instance of the class with the specified configuration, runtime data, and metadata.
+	 *
+	 * @param {ANpdConfig} npdComponentConfig - The configuration object for the NPD component.
+	 * @param {{ [p: string]: ANpdConfig }} designRuntime - An object containing runtime configuration data for the design.
+	 * @param {DesignMetadata} designMetadata - The metadata associated with the design.
+	 */
 	constructor(npdComponentConfig: ANpdConfig, designRuntime: { [p: string]: ANpdConfig }, designMetadata: DesignMetadata) {
 		this.npdComponentConfig = npdComponentConfig;
 		this.designRuntime = designRuntime;
@@ -36,6 +47,16 @@ class NpdComponentMetadata{
 	}
 }
 
+/**
+ * The ANnDspComponent class provides a representation of DSP (Digital Signal Processing) components
+ * with support for controlling and managing runtime settings such as gain and mute.
+ *
+ * This class interacts with a WebSocket for communication and uses a logger configuration
+ * for internal operations. It supports runtime configuration updates for DSP components
+ * and includes retry mechanisms for ensuring the success of updates.
+ *
+ * The component uses metadata to access and modify configuration properties in real-time.
+ */
 export class ANnDspComponent implements NnDspComponentControl {
 	private readonly id: number | string;
 	private readonly componentType: string;
@@ -43,6 +64,14 @@ export class ANnDspComponent implements NnDspComponentControl {
 	private webSocket: WebSocketCommunication;
 	private loggerConfig: NnLoggerConfig;
 
+	/**
+	 * Constructs an instance of the class with the given parameters.
+	 *
+	 * @param {number|string} id - The unique identifier for the component.
+	 * @param {string} componentType - The type of the component.
+	 * @param {WebSocketCommunication} webSocket - The instance of WebSocket communication to be used.
+	 * @param {NnLoggerConfig} loggerConfig - The configuration for logging.
+	 */
 	constructor(id: number | string, componentType: string, webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
 		this.id = id;
 		this.componentId = `${id}`;
@@ -138,6 +167,7 @@ export class ANnDspComponent implements NnDspComponentControl {
 			},
 		)
 	}
+
 	private async setMuteInternal(mute: boolean, setAndCheckAttempt: number) {
 		if (setAndCheckAttempt === 0) {
 			this.loggerConfig.isEnabledInternal() && logger.warn("There is no attempt to check runtime component with ID '{}' of type '{}'", this.componentId, this.componentType);

@@ -6,6 +6,11 @@ import { logger, NnLoggerConfig } from "./utils/LoggerUtil.ts";
 
 /**
  * Represents a control interface for output pin in digital mode.
+ * Pins are numbered from 1
+ *
+ * Digital mode returns true or false based on voltage on pin compared to rail voltage.
+ * - \>=0.6 - pin is high (has rail voltage) - true
+ * - 0.0 - pin is low (has 0 voltage) - false
  */
 export type DigitalOutputPinControl = {
 	/**
@@ -29,6 +34,15 @@ export type DigitalOutputPinControl = {
 
 /**
  * Represents a control interface for output pin in relay mode.
+ * Pins are numbered from 1.
+ *
+ * relay SPST On-Off:
+ * - 1.0 - relay is closed
+ * - 0.0 - relay is open
+ *
+ * relay SPDT On-On:
+ * - 1.0 - relay is closed (C connected to NO)
+ * - 0.0 - relay is open (C connected to NC)
  */
 export type RelayOutputPinControl = {
 	/**
@@ -70,6 +84,13 @@ export class NnControlOutputsDefinition {
 	private loggerConfig: NnLoggerConfig;
 	private ioControlStates: IOControlStates;
 
+	/**
+	 * Constructs a new instance of the class.
+	 *
+	 * @param {WebSocketCommunication} webSocket - Instance of the WebSocketCommunication for managing WebSocket communication.
+	 * @param {NnLoggerConfig} loggerConfig - Configuration settings for the logger.
+	 * @param {IOControlStates} ioControlStates - The IO control states required for managing input/output.
+	 */
 	private constructor(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig, ioControlStates: IOControlStates) {
 		this.webSocket = webSocket;
 		this.ioControlStates = ioControlStates;
@@ -86,7 +107,10 @@ export class NnControlOutputsDefinition {
 	}
 
 	/**
-	 * digital:
+	 * Get pin control in digital mode. Method param indicates which pin is controlled.
+	 * Pins are numbered from 1.
+	 *
+	 * Digital mode returns true or false based on voltage on pin compared to rail voltage.
 	 * - \>=0.6 - pin is high (has rail voltage) - true
 	 * - 0.0 - pin is low (has 0 voltage) - false
 	 * @param pin numbered from 1
@@ -99,6 +123,9 @@ export class NnControlOutputsDefinition {
 	}
 
 	/**
+	 * Get pin control in relay mode. Method param indicates which pin is controlled.
+	 * Pins are numbered from 1.
+	 *
 	 * relay SPST On-Off:
 	 * - 1.0 - relay is closed
 	 * - 0.0 - relay is open

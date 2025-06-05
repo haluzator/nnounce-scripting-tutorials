@@ -11,6 +11,15 @@ import { createRequestId } from "../events/INnounceClientRequestEvent.ts";
 import { DesignRuntimeChangedSubscriptionNotifyEvent } from "../events/incoming/DesignRuntimeSubscriptionNotify.ts";
 import { NnComponentName } from "./components/NnComponentName.ts";
 
+/**
+ * Enum representing the possible states of a design loading process.
+ *
+ * @enum {number}
+ * @property {number} NONE - Represents the initial or default state where no loading has started.
+ * @property {number} DONE - Indicates that the loading process was completed successfully.
+ * @property {number} LOADING - Denotes that the loading process is currently in progress.
+ * @property {number} ERROR - Signifies that an error occurred during the loading process.
+ */
 enum LoadDesignState {
 	NONE,
 	DONE,
@@ -19,7 +28,7 @@ enum LoadDesignState {
 }
 
 /**
- * Partial design hold only supported runtime data (for components NetTx. NetRx, Gain),
+ * Partial design holding only supported runtime data (for components NetTx. NetRx, Gain),
  * which are updated on change, design metadata and map for component name to component ID
  */
 interface PartialDesign {
@@ -28,6 +37,18 @@ interface PartialDesign {
 	nameToId: Map<string, number>;
 }
 
+/**
+ * The DesignHelper class provides functionality to assist with the design loading process.
+ * It tracks the state of design loading, handles events, and manages runtime processing logic.
+ *
+ * Properties:
+ * - partialDesign: The loaded partial design object, if applicable.
+ * - timestamp: A numeric timestamp indicating the last update time for the design.
+ * - state: The current state of the design loading process, represented by an enum of type LoadDesignState.
+ * - loadFinishConsumers: An array of consumer functions that are triggered upon the completion of design loading.
+ * - loaderIdentifier: An optional identifier for the design loader being used.
+ * - processingRuntime: A boolean flag indicating whether runtime processing is currently active.
+ */
 class DesignHelper {
 	public partialDesign?: PartialDesign;
 	public timestamp: number;
@@ -36,6 +57,14 @@ class DesignHelper {
 	public loaderIdentifier?: string;
 	public processingRuntime: boolean
 
+	/**
+	 * Initializes a new instance of the class with default properties.
+	 * The `timestamp` is set to 0, `state` is set to `LoadDesignState.NONE`,
+	 * `loadFinishConsumers` is initialized as an empty array, and
+	 * `processingRuntime` is set to false.
+	 *
+	 * @return {Object} An instance of the class with default values for all properties.
+	 */
 	constructor() {
 		this.timestamp = 0;
 		this.state = LoadDesignState.NONE;
@@ -44,6 +73,11 @@ class DesignHelper {
 	}
 }
 
+/**
+ * Utility class for managing the design metadata and communicating with a WebSocket for design-related operations.
+ * This class handles loading, initializing, and maintaining design state and metadata, and it facilitates communication
+ * between the client application and a remote WebSocket server for real-time design updates.
+ */
 export class DesignUtil {
 	public static designMetadata = new DesignHelper();
 	private static readonly DESIRED_COMPONENT_TYPES: string[] = [
@@ -53,6 +87,13 @@ export class DesignUtil {
 		NnComponentName.DUCKER_COMPONENT_NAME
 	];
 
+	/**
+	 * Initializes the design by subscribing to necessary events and loading design metadata.
+	 *
+	 * @param {WebSocketCommunication} webSocket - The WebSocketCommunication instance used for event handling and communication.
+	 * @return {Promise<void>} A Promise that resolves when the design initialization is complete.
+	 * @throws {Error} If an error occurs during the initialization process.
+	 */
 	public static async initDesign(webSocket: WebSocketCommunication) {
 		if (this.designMetadata.state !== LoadDesignState.NONE) {
 			return;
@@ -84,6 +125,13 @@ export class DesignUtil {
 		}
 	}
 
+	/**
+	 * This method loads the design data using the provided WebSocketCommunication instance.
+	 *
+	 * @param {WebSocketCommunication} webSocket - An instance of WebSocketCommunication used for communication during the design loading process.
+	 * @return {Object} The partial design metadata loaded during the process.
+	 * @throws Will throw an error if the loading process fails.
+	 */
 	public static async loadDesign(webSocket: WebSocketCommunication) {
 		const identifier = this.getIdentifier();
 		try{
@@ -96,6 +144,14 @@ export class DesignUtil {
 		}
 	}
 
+	/**
+	 * Retrieves the component identifier as a string. If the input ID is a string, it attempts to map it
+	 * to a numerical ID using the provided design. Otherwise, it converts the numerical ID directly to a string.
+	 *
+	 * @param {PartialDesign} dspDesign - The design object containing the mapping between component names and IDs.
+	 * @param {number | string} id - The component identifier, which can either be a number or a string.
+	 * @return {string} The component identifier represented as a string. If a matching ID is not found for a string input, returns the input string.
+	 */
 	public static getComponentId(dspDesign: PartialDesign, id: number | string): string {
 		if (typeof id === "string") {
 			const id_number = dspDesign.nameToId.get(id);

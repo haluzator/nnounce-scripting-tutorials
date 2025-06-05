@@ -5,7 +5,7 @@ import { ConnectionOptions, NnounceDevice, NnounceScriptingApi } from "./nnounce
  *
  * @param hostname Hostname or IP address of the device.
  * @param apiKey API key to be used for authentication (can be null).
- * @param connectionOptions
+ * @param connectionOptions Connection options object
  */
 export function connectDevice(hostname: string, apiKey: string | null, connectionOptions?: ConnectionOptions): NnounceScriptingApi {
 	return new NnounceDevice(hostname, apiKey, connectionOptions);

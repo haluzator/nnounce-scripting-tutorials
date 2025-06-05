@@ -2,6 +2,19 @@ import { IEvent } from "../IEvent.ts";
 import { IoPinType } from "../../ioControl/IoPinType.ts";
 import { IoPinMode } from "../../ioControl/IoPinMode.ts";
 
+/**
+ * Interface representing a notification for the state subscription of I/O pins.
+ * This notifies the current states of I/O controls and any associated response tags.
+ *
+ * It extends the `IEvent` interface, indicating its association with an event-driven architecture.
+ *
+ * Properties:
+ * - `states`: An array containing the current states of I/O controls represented by `IoControl` objects.
+ * - `responseTags`: An array of strings used as tags for identifying or correlating responses.
+ *
+ * This interface is useful in systems where monitoring and reacting to state changes
+ * of I/O pins are crucial. Implementations can use this to receive and handle subscription events.
+ */
 export interface IoPinStateSubscriptionNotify extends IEvent {
 	states: Array<IoControl>;
 	responseTags: Array<string>;

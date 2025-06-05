@@ -129,6 +129,13 @@ export class NnPagingRouterDefinition {
 	private webSocket: WebSocketCommunication;
 	private loggerConfig: NnLoggerConfig
 
+	/**
+	 * Private constructor for initializing a new instance of the class.
+	 * The constructor sets up event handlers for WebSocket communication and assigns the provided logger configuration.
+	 *
+	 * @param {WebSocketCommunication} webSocket - The WebSocket communication instance used for event handling.
+	 * @param {NnLoggerConfig} loggerConfig - The configuration object for logger settings.
+	 */
 	private constructor(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
 		this.loggerConfig = loggerConfig;
 		this.webSocket = webSocket;
