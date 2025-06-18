@@ -1,6 +1,12 @@
 const nnApi: NnounceScriptingApi;
 /**
  * Represents a control interface for input pin in analog mode.
+ * Pins are numbered from 1.
+ *
+ * Analog mode returns ratio between voltage on pin and rail voltage:
+ * - 1.0 - pin is high (has rail voltage)
+ * - 0.5 - pin has half of the rail voltage
+ * - 0.0 - pin is low (has 0 voltage)
  */
 type AnalogInputPinControl = {
     /**
@@ -33,6 +39,24 @@ type BiConsumer<T, R> = {
     (data1: T, data2: R): void;
 };
 
+class ButtonStates {
+    private static INSTANCE;
+    private buttonStates;
+    private buttonChangeListeners;
+    private webSocket;
+    private initialized;
+    constructor(webSocket: WebSocketCommunication);
+    static initInstance(): Promise<void>;
+    /**
+     * Return singleton instance
+     */
+    static getInstance(webSocket: WebSocketCommunication): ButtonStates;
+    getButtonNames(): string[];
+    getButtonActive(buttonName: string): boolean | undefined;
+    onButtonChange(buttonName: string, listener: Consumer<boolean>): void;
+    private onButtonStateEvent;
+}
+
 /**
  * Represents a callback function type that takes no arguments and returns no value.
  */
@@ -47,7 +71,7 @@ declare module 'nnounceConnector' {
  *
  * @param hostname Hostname or IP address of the device.
  * @param apiKey API key to be used for authentication (can be null).
- * @param connectionOptions
+ * @param connectionOptions Connection options object
  */
 export function connectDevice(hostname: string, apiKey: string | null, connectionOptions?: ConnectionOptions): NnounceScriptingApi;
 }
@@ -73,6 +97,14 @@ type Consumer<T> = {
     (data: T): void;
 };
 
+/**
+ * Represents a control interface for input pin in digital mode, capable of reading the pin state and monitoring changes in its state.
+ * Pins are numbered from 1.
+ *
+ * Digital mode returns true or false based on voltage on pin compared to rail voltage.
+ * - \>=0.6 - pin is high (has rail voltage) - true
+ * - 0.0 - pin is low (has 0 voltage) - false
+ */
 type DigitalInputPinControl = {
     /**
      * Returns the state of the input pin based on detected voltage.
@@ -100,6 +132,11 @@ type DigitalInputPinControl = {
 
 /**
  * Represents a control interface for output pin in digital mode.
+ * Pins are numbered from 1
+ *
+ * Digital mode returns true or false based on voltage on pin compared to rail voltage.
+ * - \>=0.6 - pin is high (has rail voltage) - true
+ * - 0.0 - pin is low (has 0 voltage) - false
  */
 type DigitalOutputPinControl = {
     /**
@@ -400,6 +437,49 @@ interface LoggerInterface {
     critical: (format: string, ...args: unknown[]) => void;
 }
 
+/**
+ * Control for button in momentary mode.
+ */
+type MomentaryButtonControl = {
+    /**
+     * Represents a callback function that will be executed when an associated
+     * button press event occurs.
+     *
+     * @type {function}
+     * @param {function} onPressCb - A callback function to be invoked when the press action is triggered.
+     *                               The callback accepts no parameters and returns no value.
+     */
+    onPress: {
+        (onPressCb: {
+            (): void;
+        }): void;
+    };
+    /**
+     * Represents a callback function that will be executed when an associated
+     * button release event occurs.
+     *
+     * @type {function}
+     * @param {function} onReleaseCb - A callback function to be invoked when the release action is triggered.
+     *                               	The callback accepts no parameters and returns no value.
+     */
+    onRelease: {
+        (onReleaseCb: {
+            (): void;
+        }): void;
+    };
+    /**
+     * Retrieves a boolean value, <true> if associated button is pressed.
+     *
+     * @returns {boolean} A boolean value indicating if button is pressed.
+     */
+    getValue: () => boolean;
+};
+
+/**
+ * Represents a utility for retrieving network-related information such as
+ * available interfaces and corresponding IP addresses, MAC addresses,
+ * and system hostname.
+ */
 type NetworkStatus = {
     /**
      * Returns an array of available network interface IDs.
@@ -429,6 +509,34 @@ type NetworkStatus = {
     getHostname: () => string;
 };
 
+class NnButtonsDefinition {
+    private static INSTANCE;
+    private buttonStates;
+    private constructor();
+    /**
+     * Return singleton instance
+     */
+    static getInstance(buttonStates: ButtonStates): NnButtonsDefinition;
+    /**
+     * Retrieves an array containing the names of available buttons.
+     *
+     * @return {Array<string>} An array of available button names.
+     */
+    names(): Array<string>;
+    /**
+     * Returns control for button in momentary mode.
+     * @param buttonName Name of button to be controlled.
+     */
+    momentary(buttonName: string): MomentaryButtonControl;
+    /**
+     * Returns control for button in toggle mode.
+     * @param buttonName Name of button to be controlled.
+     */
+    toggle(buttonName: string): ToggleButtonControl;
+    private reactOnButtonState;
+    private getButtonState;
+}
+
 /**
  * Fixed pins - hardcoded in hardware and cannot be changed
  *
@@ -438,20 +546,30 @@ type NetworkStatus = {
 class NnControlInputsDefinition {
     private static INSTANCE;
     private ioControlStates;
+    /**
+     * Constructor for initializing an instance of the class with the given IO control states.
+     * @param {IOControlStates} ioControlStates - The initial IO control states to be set for the instance.
+     */
     private constructor();
     /**
      * Return singleton instance
      */
     static getInstance(ioControlStates: IOControlStates): NnControlInputsDefinition;
     /**
-     * digital:
+     * Get pin control in digital mode. Method param indicates which pin is controlled.
+     * Pins are numbered from 1.
+     *
+     * Digital mode returns true or false based on voltage on pin compared to rail voltage.
      * - \>=0.6 - pin is high (has rail voltage) - true
      * - 0.0 - pin is low (has 0 voltage) - false
      * @param pin numbered from 1
      */
     digital(pin: number): DigitalInputPinControl;
     /**
-     * analog:
+     * Get pin control in analog mode. Method param indicates which pin is controlled.
+     * Pins are numbered from 1.
+     *
+     * Analog mode returns ratio between voltage on pin and rail voltage:
      * - 1.0 - pin is high (has rail voltage)
      * - 0.5 - pin has half of the rail voltage
      * - 0.0 - pin is low (has 0 voltage)
@@ -473,19 +591,32 @@ class NnControlOutputsDefinition {
     private webSocket;
     private loggerConfig;
     private ioControlStates;
+    /**
+     * Constructs a new instance of the class.
+     *
+     * @param {WebSocketCommunication} webSocket - Instance of the WebSocketCommunication for managing WebSocket communication.
+     * @param {NnLoggerConfig} loggerConfig - Configuration settings for the logger.
+     * @param {IOControlStates} ioControlStates - The IO control states required for managing input/output.
+     */
     private constructor();
     /**
      * Return singleton instance
      */
     static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig, ioControlStates: IOControlStates): NnControlOutputsDefinition;
     /**
-     * digital:
+     * Get pin control in digital mode. Method param indicates which pin is controlled.
+     * Pins are numbered from 1.
+     *
+     * Digital mode returns true or false based on voltage on pin compared to rail voltage.
      * - \>=0.6 - pin is high (has rail voltage) - true
      * - 0.0 - pin is low (has 0 voltage) - false
      * @param pin numbered from 1
      */
     digital(pin: number): DigitalOutputPinControl;
     /**
+     * Get pin control in relay mode. Method param indicates which pin is controlled.
+     * Pins are numbered from 1.
+     *
      * relay SPST On-Off:
      * - 1.0 - relay is closed
      * - 0.0 - relay is open
@@ -507,6 +638,12 @@ class NnDspComponent {
     private static INSTANCE;
     private webSocket;
     private loggerConfig;
+    /**
+     * Constructs an instance of the class with the specified WebSocket communication handler and logger configuration.
+     *
+     * @param {WebSocketCommunication} websocket - The WebSocket communication handler used for data transmission.
+     * @param {NnLoggerConfig} loggerConfig - The configuration settings for the logger.
+     */
     private constructor();
     /**
      * Return singleton instance
@@ -582,14 +719,31 @@ interface NnDspComponentControl {
 class NnDspDefinition {
     private static INSTANCE;
     private _components;
+    /**
+     * Private constructor for initializing the components using the provided WebSocket communication and logger configuration.
+     *
+     * @param {WebSocketCommunication} webSocket - The WebSocket communication instance used for message exchange.
+     * @param {NnLoggerConfig} loggerConfig - Configuration instance for logger settings.
+     */
     private constructor();
     /**
      * Components holder
      */
     get components(): NnDspComponent;
+    /**
+     * Retrieves the singleton instance of the NnDspDefinition class. If the instance does not exist, it initializes a new one
+     * using the provided WebSocketCommunication and logger configuration.
+     *
+     * @param {WebSocketCommunication} webSocket - The WebSocket communication instance to be used.
+     * @param {NnLoggerConfig} loggerConfig - The logger configuration for the instance.
+     * @return {NnDspDefinition} The singleton instance of NnDspDefinition.
+     */
     static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig): NnDspDefinition;
 }
 
+/**
+ * Represents the control interface for managing a DSP Ducker's behavior.
+ */
 interface NnDspDuckerControl {
     /**
      * Registers a listener for the ducker priority input active change event.
@@ -634,7 +788,7 @@ declare module 'nnounceDevice' {
  * If no hostname is provided, "localhost" is used.
  * If no api-key is provided, null is used.
  *
- * @param connectionOptions
+ * @param connectionOptions Connection options object
  */
 export function nnounceDevice(connectionOptions?: ConnectionOptions): NnounceScriptingApi;
 }
@@ -693,7 +847,17 @@ interface NnounceScriptingApi {
      * see {@link NnUtilDefinition}
      */
     util: NnUtilDefinition;
+    /**
+     * Handle buttons in momentary or toggle mode.
+     */
+    buttons: NnButtonsDefinition;
+    /**
+     * Function to tell if the device is connected.
+     */
     isConnected: () => boolean;
+    /**
+     * Promise of device connection. If you want to block and wait for the device connection, await on this promise.
+     */
     connectionPromise: () => Promise<NnounceScriptingApi>;
 }
 
@@ -712,6 +876,13 @@ class NnPagingRouterDefinition {
     private callTimeoutMap;
     private webSocket;
     private loggerConfig;
+    /**
+     * Private constructor for initializing a new instance of the class.
+     * The constructor sets up event handlers for WebSocket communication and assigns the provided logger configuration.
+     *
+     * @param {WebSocketCommunication} webSocket - The WebSocket communication instance used for event handling.
+     * @param {NnLoggerConfig} loggerConfig - The configuration object for logger settings.
+     */
     private constructor();
     /**
      * Return singleton instance
@@ -745,6 +916,11 @@ class NnPagingRouterDefinition {
 class NnSnmpDefinition {
     static INSTANCE: NnSnmpDefinition;
     private webSocket;
+    /**
+     * Creates an instance of the class with a specified WebSocketCommunication object.
+     *
+     * @param {WebSocketCommunication} webSocket - The WebSocketCommunication instance used for communication.
+     */
     private constructor();
     /**
      * Return singleton instance
@@ -905,6 +1081,15 @@ class NnSystemDefinition {
 
       /**
        * Represents a control interface for output pin in relay mode.
+       * Pins are numbered from 1.
+       *
+       * relay SPST On-Off:
+       * - 1.0 - relay is closed
+       * - 0.0 - relay is open
+       *
+       * relay SPDT On-On:
+       * - 1.0 - relay is closed (C connected to NO)
+       * - 0.0 - relay is open (C connected to NC)
        */
       type RelayOutputPinControl = {
           /**
@@ -1001,6 +1186,10 @@ class NnSystemDefinition {
           responseTags: Array<string>;
       }
 
+      /**
+       * The SystemDefinition class provides methods to retrieve system-related information
+       * such as firmware version, hardware details, and network status using a WebSocket communication channel.
+       */
       class SystemDefinition {
           private static INSTANCE;
           private webSocket;
@@ -1124,7 +1313,20 @@ class NnSystemDefinition {
           private webSocket;
           private systemVariablesMap;
           private initialized;
+          /**
+           * Private constructor for initializing the instance with WebSocket communication and system variables map.
+           *
+           * @param {WebSocketCommunication} webSocket - The WebSocket communication instance for handling WebSocket connections.
+           * @param {Map<string, string>} systemVariablesMap - A map containing key-value pairs of system variables.
+           */
           private constructor();
+          /**
+           * Returns the singleton instance of the SystemVariablesControlDefinition.
+           * If the instance does not exist, it creates one using the provided WebSocketCommunication.
+           *
+           * @param {WebSocketCommunication} webSocket - The WebSocketCommunication object used to initialize the instance if it does not exist.
+           * @return {SystemVariablesControlDefinition} The singleton instance of the SystemVariablesControlDefinition.
+           */
           static getInstance(webSocket: WebSocketCommunication): SystemVariablesControlDefinition;
           /**
            * Initialize system variables control instance and set current system variables to map
@@ -1149,6 +1351,30 @@ class NnSystemDefinition {
            */
           private systemVariableChange;
       }
+
+      /**
+       * Control for button in toggle mode.
+       */
+      type ToggleButtonControl = {
+          /**
+           * Callback function that is triggered when a change event occurs.
+           *
+           * @param {Function} onChangeCb - The callback function to handle the change event.
+           * @param {boolean} onChangeCb.value - The boolean value indicating the state after the change event.
+           * @returns {void} This function does not return any value.
+           */
+          onChange: {
+              (onChangeCb: {
+                  (value: boolean): void;
+              }): void;
+          };
+          /**
+           * Retrieves a boolean value, <true> if associated button is pressed.
+           *
+           * @returns {boolean} A boolean value indicating if button is pressed.
+           */
+          getValue: () => boolean;
+      };
 
       /**
        * Manages WebSocket communication for subscribing to events, sending messages,
@@ -1205,6 +1431,15 @@ class NnSystemDefinition {
            * @return {void} This method does not return a value.
            */
           addEventHandler(type: string, onEvent: Consumer<IEvent>): void;
+          /**
+           * Subscribes to a specific event by sending a subscription request and registering an event handler.
+           *
+           * @param {string} requestType - The type of the subscription request for subscribing to the event.
+           * @param {string} responseType - The type of the response expected for the event.
+           * @param {number} dataEveryMs - The interval, in milliseconds, at which the subscription notifications are expected.
+           * @param {Consumer<IEvent>} onEvent - The consumer function that handles the received event.
+           * @return {void} Does not return a value.
+           */
           subscribeToEvent(requestType: string, responseType: string, dataEveryMs: number, onEvent: Consumer<IEvent>): void;
           /**
            * Subscribes to a live event by specifying the request and response types along with an event handler.
@@ -1215,6 +1450,11 @@ class NnSystemDefinition {
            * @return {void} This method does not return a value.
            */
           subscribeToLiveEvent(requestType: string, responseType: string, onEvent: Consumer<IEvent>): void;
+          /**
+           * Checks whether the WebSocket connection is currently open and active.
+           *
+           * @return {boolean} Returns true if the WebSocket connection exists and is in the OPEN state, otherwise returns false.
+           */
           connected(): boolean;
           private sendMessageToSocket;
           private onDisconnect;
@@ -1227,3 +1467,5 @@ class NnSystemDefinition {
           private stopSentHeartBeat;
           private isHeartbeatTimeout;
       }
+
+      

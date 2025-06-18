@@ -1,0 +1,5 @@
+{
+  "compilerOptions": {
+    "types": ["./../../SDK/monaco-typings.d.ts"]
+  }
+}

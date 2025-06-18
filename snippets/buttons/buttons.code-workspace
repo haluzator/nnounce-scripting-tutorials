@@ -1,0 +1,117 @@
+{
+	"folders": [
+		{
+    		"name": "root",
+    		"path": "."
+    	},
+		{
+        	"path": "./buttons-momentaryOnPress"
+        },
+        {
+        	"path": "./buttons-momentaryOnRelease"
+        },
+        {
+        	"path": "./buttons-momentaryState"
+        },
+        {
+        	"path": "./buttons-toggleChange"
+        },
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+            	"request": "launch",
+            	"name": "Buttons - Momentary button press",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:buttons-momentaryOnPress}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--env-file",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:buttons-momentaryOnPress}/main.ts",
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "Buttons - Momentary button release",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:buttons-momentaryOnRelease}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--env-file",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:buttons-momentaryOnRelease}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "Buttons - Is momentary button pressed",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:buttons-momentaryState}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--env-file",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:buttons-momentaryState}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            },
+            {
+            	"request": "launch",
+            	"name": "Buttons - Toggle button change",
+            	"type": "node",
+            	"cwd": "${workspaceFolder:buttons-toggleChange}",
+            	"runtimeExecutable": "deno",
+            	"runtimeArgs": [
+            		"run",
+            		"--import-map",
+            		"./../import_map.json",
+            		"--inspect-wait",
+            		"--allow-env",
+            		"--env-file",
+            		"--allow-read",
+            		"--allow-net",
+            		"--reload",
+            		"--unsafely-ignore-certificate-errors",
+            		"--allow-import",
+            		"../bootstrap.ts",
+            		"${workspaceFolder:buttons-toggleChange}/main.ts"
+            	],
+            	"attachSimplePort": 9229
+            }
+		],
+	}
+}

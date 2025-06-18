@@ -11,6 +11,8 @@ import { SystemVariablesControlDefinition } from "./nnSystem/SystemVariablesCont
 import { SystemDefinition } from "./nnSystem/SystemDefinition.ts";
 import { IOControlStates } from "./ioControl/IOControlStates.ts";
 import { DesignUtil } from "./dspDesign/DesignUtil.ts";
+import { NnButtonsDefinition } from "./nnButtons.ts";
+import { ButtonStates } from "./buttons/ButtonStates.ts";
 
 /**
  * Nnounce scripting interface.
@@ -66,6 +68,10 @@ export interface NnounceScriptingApi {
 	 */
 	util: NnUtilDefinition;
 	/**
+	 * Handle buttons in momentary or toggle mode.
+	 */
+	buttons: NnButtonsDefinition;
+	/**
 	 * Function to tell if the device is connected.
 	 */
 	isConnected: () => boolean;
@@ -106,6 +112,7 @@ export class NnounceDevice implements NnounceScriptingApi {
 	public loggerConfig: NnLoggerConfig;
 	public snmp: NnSnmpDefinition;
 	public system: NnSystemDefinition;
+	public buttons: NnButtonsDefinition;
 	public util: NnUtilDefinition;
 
 	/**
@@ -128,6 +135,7 @@ export class NnounceDevice implements NnounceScriptingApi {
 		const webSocket = new WebSocketCommunication(hostname, apiKey, nnLoggerConfig);
 		this.webSocket = webSocket;
 		const ioControlStates = IOControlStates.getInstance(webSocket, nnLoggerConfig);
+		const buttonStates = ButtonStates.getInstance(webSocket);
 		this.pagingRouter = NnPagingRouterDefinition.getInstance(webSocket, nnLoggerConfig);
 		this.controlInputs = NnControlInputsDefinition.getInstance(ioControlStates);
 		this.controlOutputs = NnControlOutputsDefinition.getInstance(webSocket, nnLoggerConfig, ioControlStates);
@@ -136,6 +144,7 @@ export class NnounceDevice implements NnounceScriptingApi {
 		this.loggerConfig = nnLoggerConfig;
 		this.snmp = NnSnmpDefinition.getInstance(webSocket);
 		this.system = NnSystemDefinition.getInstance(SystemVariablesControlDefinition.getInstance(webSocket), SystemDefinition.getInstance(webSocket));
+		this.buttons = NnButtonsDefinition.getInstance(buttonStates)
 		this.util = NnUtilDefinition.getInstance();
 		this._connectionPromise =
 			Promise.all([
@@ -143,6 +152,7 @@ export class NnounceDevice implements NnounceScriptingApi {
 					SystemDefinition.initInstance(),
 					IOControlStates.initInstance(),
 					DesignUtil.initDesign(webSocket),
+					ButtonStates.initInstance(),
 				]
 			).then(() => {
 				logger.info("Init mandatory services finished.");

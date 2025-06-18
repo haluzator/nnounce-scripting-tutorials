@@ -50,12 +50,22 @@ To enable scripting on nnounce devices from Visual Studio Code, follow these ste
 
 ## Snippet Subfolders
 
+### Buttons
+Snippets focusing on control of device buttons. 
+These snippets are usable only on **micnode2h**, **micnode2g**, **micnode mini3** and **micnode mini6** variants, as other devices do not have any buttons.
+
+Following snippets are available:
+- Handle momentary button press
+- Handle momentary button release
+- Handle toggle button change
+- Get state of momentary button
+
 ### Control IO
 Snippets focusing on control inputs and outputs can be found in `controlIO` project subfolder. 
 Not all nnounce devices have control I/O capablities, so these snippets are usable only with **ampnode4**, **ionode4**, **micnode2h** and **micnode2g** variants.
 
 Following snippets are available:
-- Handling change on input pin in digital mode
+- Handle change on input pin in digital mode
 - Output control pin in relay mode - open
 - Output control pin in relay mode - close
 - Output control pin in relay mode - get open state
