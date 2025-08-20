@@ -5,11 +5,10 @@ import { createDesignLoadEvent } from "../events/outgoing/DesignLoadEvent.ts";
 import { logger } from "../utils/LoggerUtil.ts";
 import { DesignLoadResultEvent } from "../events/incoming/DesignLoadResultEvent.ts";
 import { Consumer } from "../utils/FunctionalInterfaces.ts";
-import { DesignRuntimeChangedSubscriptionResponseEvent } from "../events/incoming/DesignRuntimeChangedSubscriptionResponseEvent.ts";
 import { DesignRuntimeChangedSubscriptionRequestEvent } from "../events/outgoing/DesignRuntimeChangedSubscriptionRequestEvent.ts";
-import { createRequestId } from "../events/INnounceClientRequestEvent.ts";
 import { DesignRuntimeChangedSubscriptionNotifyEvent } from "../events/incoming/DesignRuntimeSubscriptionNotify.ts";
 import { NnComponentName } from "./components/NnComponentName.ts";
+import { NetworkChangeSubscriptionNotifyEvent } from "../events/incoming/NetworkChangeSubscriptionNotifyEvent.ts";
 
 /**
  * Enum representing the possible states of a design loading process.
@@ -47,7 +46,6 @@ interface PartialDesign {
  * - state: The current state of the design loading process, represented by an enum of type LoadDesignState.
  * - loadFinishConsumers: An array of consumer functions that are triggered upon the completion of design loading.
  * - loaderIdentifier: An optional identifier for the design loader being used.
- * - processingRuntime: A boolean flag indicating whether runtime processing is currently active.
  */
 class DesignHelper {
 	public partialDesign?: PartialDesign;
@@ -55,13 +53,11 @@ class DesignHelper {
 	public state: LoadDesignState;
 	public loadFinishConsumers: Array<Consumer<Error|null>>;
 	public loaderIdentifier?: string;
-	public processingRuntime: boolean
 
 	/**
 	 * Initializes a new instance of the class with default properties.
 	 * The `timestamp` is set to 0, `state` is set to `LoadDesignState.NONE`,
 	 * `loadFinishConsumers` is initialized as an empty array, and
-	 * `processingRuntime` is set to false.
 	 *
 	 * @return {Object} An instance of the class with default values for all properties.
 	 */
@@ -69,7 +65,6 @@ class DesignHelper {
 		this.timestamp = 0;
 		this.state = LoadDesignState.NONE;
 		this.loadFinishConsumers = [];
-		this.processingRuntime = false;
 	}
 }
 
@@ -79,7 +74,6 @@ class DesignHelper {
  * between the client application and a remote WebSocket server for real-time design updates.
  */
 export class DesignUtil {
-	public static designMetadata = new DesignHelper();
 	private static readonly DESIRED_COMPONENT_TYPES: string[] = [
 		NnComponentName.GAIN_COMPONENT_NAME,
 		NnComponentName.NET_RX_COMPONENT_NAME,
@@ -87,38 +81,65 @@ export class DesignUtil {
 		NnComponentName.DUCKER_COMPONENT_NAME
 	];
 
+	private designMetadata = new DesignHelper();
+	private webSocket: WebSocketCommunication;
+
+	private constructor(websocket: WebSocketCommunication) {
+		this.webSocket = websocket;
+	}
+
+	public static getInstance(websocket: WebSocketCommunication) {
+		return new DesignUtil(websocket);
+	}
+
 	/**
 	 * Initializes the design by subscribing to necessary events and loading design metadata.
 	 *
-	 * @param {WebSocketCommunication} webSocket - The WebSocketCommunication instance used for event handling and communication.
 	 * @return {Promise<void>} A Promise that resolves when the design initialization is complete.
 	 * @throws {Error} If an error occurs during the initialization process.
 	 */
-	public static async initDesign(webSocket: WebSocketCommunication) {
+	public async initDesign() {
 		if (this.designMetadata.state !== LoadDesignState.NONE) {
 			return;
 		}
 		try {
-			await this.loadDesign(webSocket);
+			// first load design to populate this.designMetadata.partialDesign
+			const designChangePromise = new Promise<void>((resolve) => {
+				let resolved = false;
+				this.webSocket.subscribeToLiveEvent("designChangeSubscriptionRequest", "designChangeNotify", async (event) => {
+					this.designMetadata.partialDesign = undefined;
+					this.designMetadata.state = LoadDesignState.NONE;
+					await this.loadDesign();
+					if (!resolved) {
+						resolved = true;
+						resolve();
+					}
+				});
+			});
+			await designChangePromise;
+
+			// now subscribe for runtime changes
 			const requestEvent: DesignRuntimeChangedSubscriptionRequestEvent = {
 				type: "designRuntimeChangedSubscriptionRequest",
-				requestId: createRequestId(),
 				keepAliveMs: 0,
 				responseTag: "deno-script-api",
 				componentNames: DesignUtil.DESIRED_COMPONENT_TYPES
 			}
-			const event = await webSocket.sendEventWithResponse<DesignRuntimeChangedSubscriptionResponseEvent, DesignRuntimeChangedSubscriptionRequestEvent>(requestEvent);
-			this.processRuntimeChangedResponseEvent(event)
-			webSocket.addEventHandler("designRuntimeChangedSubscriptionNotify", event => {
-				this.processRuntimeChangedNotifyEvent(event as DesignRuntimeChangedSubscriptionNotifyEvent)
-			})
 
-			webSocket.subscribeToLiveEvent("designChangeSubscriptionRequest", "designChangeNotify", (event) => {
-				this.designMetadata.partialDesign = undefined;
-				this.designMetadata.state = LoadDesignState.NONE;
-				this.loadDesign(webSocket);
-			})
-
+			// add listener for changes, then send subscription event
+			const runtimeChangedSubscriptionPromise = new Promise<void>((resolve) => {
+				let resolved = false;
+				this.webSocket.addEventHandler("designRuntimeChangedSubscriptionNotify", (event) => {
+					this.processRuntimeChangedNotifyEvent(event as DesignRuntimeChangedSubscriptionNotifyEvent)
+					if (!resolved) {
+						resolved = true;
+						resolve();
+					}
+				})
+			});
+			// using sendEvent(..) instead of subscribeToLiveEvent(..) because subscription event has extra field 'componentNames'
+			this.webSocket.sendEvent(requestEvent, true);
+			await runtimeChangedSubscriptionPromise;
 		} catch (e) {
 			logger.error("Error during init DSP design. Error: ", String(e));
 			throw e;
@@ -126,16 +147,15 @@ export class DesignUtil {
 	}
 
 	/**
-	 * This method loads the design data using the provided WebSocketCommunication instance.
+	 * This method loads the design data.
 	 *
-	 * @param {WebSocketCommunication} webSocket - An instance of WebSocketCommunication used for communication during the design loading process.
 	 * @return {Object} The partial design metadata loaded during the process.
 	 * @throws Will throw an error if the loading process fails.
 	 */
-	public static async loadDesign(webSocket: WebSocketCommunication) {
-		const identifier = this.getIdentifier();
+	public async loadDesign() {
+		const identifier = DesignUtil.getIdentifier();
 		try{
-			await this.loadDesignInternal(identifier, webSocket);
+			await this.loadDesignInternal(identifier);
 			return this.designMetadata.partialDesign;
 		} catch (e) {
 			logger.error("Error during loading design: {}", e);
@@ -161,27 +181,7 @@ export class DesignUtil {
 		return `${id}`;
 	}
 
-	private static processRuntimeChangedResponseEvent(event: DesignRuntimeChangedSubscriptionResponseEvent) {
-		if (this.designMetadata.processingRuntime) {
-			return;
-		}
-		this.designMetadata.processingRuntime = true;
-		try {
-			if (!this.designMetadata.partialDesign) {
-				if (Object.keys(event.metadata).length == 0) {
-					return;
-				}
-				// design should be loaded due to initialization or change
-				return;
-			}
-			this.designMetadata.partialDesign.runtime = event.runtime;
-			this.designMetadata.partialDesign.metadata = event.metadata;
-		} finally {
-			this.designMetadata.processingRuntime = false;
-		}
-	}
-
-	private static processRuntimeChangedNotifyEvent(event: DesignRuntimeChangedSubscriptionNotifyEvent) {
+	private processRuntimeChangedNotifyEvent(event: DesignRuntimeChangedSubscriptionNotifyEvent) {
 		if (!this.designMetadata.partialDesign) {
 			// design should be loaded due to initialization or change
 			return;
@@ -195,7 +195,7 @@ export class DesignUtil {
 		}
 	}
 
-	private static async loadDesignInternal(identifier: string, webSocket: WebSocketCommunication) {
+	private async loadDesignInternal(identifier: string) {
 		if (this.designMetadata.state == LoadDesignState.LOADING && this.designMetadata.loaderIdentifier !== identifier) {
 			// some ask for design before. wait for its completion
 			return new Promise<void>((resolve, reject) => {
@@ -219,7 +219,7 @@ export class DesignUtil {
 		// consumers and these will wait for main loader result
 		this.designMetadata.state = LoadDesignState.LOADING;
 		this.designMetadata.loaderIdentifier = identifier;
-		const event = await RetryUtil.runAsync("Loading design", () => webSocket.sendEventWithResponse(createDesignLoadEvent()))
+		const event = await RetryUtil.runAsync("Loading design", () => this.webSocket.sendEventWithResponse(createDesignLoadEvent()))
 		const dspDesign = (event as DesignLoadResultEvent).data;
 
 		if (!dspDesign) {
@@ -251,10 +251,14 @@ export class DesignUtil {
 		this.notifyAllDesignConsumers(null);
 	}
 
-	private static notifyAllDesignConsumers(error: Error|null) {
+	private notifyAllDesignConsumers(error: Error|null) {
 		this.designMetadata.loadFinishConsumers.forEach(consumer => consumer(error));
 		this.designMetadata.loadFinishConsumers = [];
 		this.designMetadata.state = error ? LoadDesignState.ERROR : LoadDesignState.DONE
+	}
+
+	public getDesignMetadata() {
+		return this.designMetadata;
 	}
 
 	private static getIdentifier() {

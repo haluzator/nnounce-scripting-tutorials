@@ -23,7 +23,6 @@ export interface InputControl {
  * This includes managing state updates and notifying listeners of input changes.
  */
 export class IOControlStates {
-	private static INSTANCE: IOControlStates;
 
 	/**
 	 * Represents a mapping of output pin numbers to their respective IoControl instances.
@@ -89,37 +88,29 @@ export class IOControlStates {
 	}
 
 	/**
-	 * Returns the singleton instance of IOControlStates.
-	 * If the instance doesn't exist, it creates a new one with the provided parameters.
+	 * Returns instance of IOControlStates.
 	 *
 	 * @param {WebSocketCommunication} webSocket - WebSocket communication instance for sending/receiving events
 	 * @param {NnLoggerConfig} loggerConfig - Configuration for logging
-	 * @return {IOControlStates} The singleton instance of IOControlStates
+	 * @return {IOControlStates} Instance of IOControlStates
 	 */
 	public static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new IOControlStates(webSocket, loggerConfig);
-		}
-		return this.INSTANCE;
+		return new IOControlStates(webSocket, loggerConfig);
 	}
 
 	/**
-	 * Initializes the already created singleton instance by setting up WebSocket
+	 * Initializes the instance by setting up WebSocket
 	 * subscriptions for IO pin state updates.
 	 *
 	 * This method must be called after getInstance() and before using any IO control
 	 * functionality. It sends a subscription request to receive regular updates of
 	 * pin states and initializes internal state tracking.
 	 *
-	 * @throws {Error} If the instance hasn't been created yet via getInstance()
 	 * @throws {Error} If the initialization process fails
 	 * @return {Promise<void>} A promise that resolves when initialization is complete
 	 */
-	public static async initInstance() {
-		if (!this.INSTANCE) {
-			throw new Error("IO control is not yet created!");
-		}
-		if (this.INSTANCE.initialized) {
+	public async init() {
+		if (this.initialized) {
 			return;
 		}
 
@@ -131,10 +122,10 @@ export class IOControlStates {
 				keepAliveMs: 0,
 				responseTag: "deno-script-api"
 			}
-			const response = await this.INSTANCE.webSocket.sendEventWithResponse<IoPinStatePollSubscriptionResponseEvent, IoPinStatePollSubscriptionRequestEvent>(requestEvent, true);
-			this.INSTANCE.onControlStateEvent(response.states)
+			const response = await this.webSocket.sendEventWithResponse<IoPinStatePollSubscriptionRequestEvent, IoPinStatePollSubscriptionResponseEvent>(requestEvent, true);
+			this.onControlStateEvent(response.states)
 
-			this.INSTANCE.initialized = true;
+			this.initialized = true;
 		} catch (e) {
 			logger.error("Error during init IO control. Error: ", String(e));
 			throw e;

@@ -9,8 +9,6 @@ import { logger } from "../utils/LoggerUtil.ts";
  * such as firmware version, hardware details, and network status using a WebSocket communication channel.
  */
 export class SystemDefinition {
-	private static INSTANCE: SystemDefinition;
-
 	private webSocket: WebSocketCommunication;
 	private status: NnounceStatusEvent;
 	private initialized: boolean = false;
@@ -25,26 +23,20 @@ export class SystemDefinition {
 	}
 
 	/**
-	 * Returns the singleton instance of SystemDefinition.
-	 * If the instance doesn't exist, creates a new one with the provided WebSocket.
+	 * Returns a new instance of SystemDefinition.
 	 *
 	 * @param webSocket - The WebSocket communication instance used to interact with the device
-	 * @returns The singleton instance of SystemDefinition
+	 * @returns New instance of SystemDefinition
 	 */
 	public static getInstance(webSocket: WebSocketCommunication) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new SystemDefinition(webSocket)
-		}
-		return this.INSTANCE;
+		return new SystemDefinition(webSocket)
 	}
+
 	/**
 	 * Initialize the system definition instance and set the current status, which will be automatically updated whenever a change occurs
 	 */
-	public static async initInstance() {
-		if (!this.INSTANCE) {
-			throw new Error("System info is not yet created!");
-		}
-		if (this.INSTANCE.initialized) {
+	public async init() {
+		if (this.initialized) {
 			return;
 		}
 
@@ -54,10 +46,19 @@ export class SystemDefinition {
 				requestId: createRequestId()
 			}
 
-			this.INSTANCE.setStatus(await this.INSTANCE.webSocket.sendEventWithResponse<NnounceStatusEvent, INnounceClientRequestEvent>(requestEvent));
-			this.INSTANCE.webSocket.subscribeToLiveEvent("networkChangeSubscriptionRequest", "networkChangeSubscriptionNotify", (event) => {
-				this.INSTANCE.onNetworkChangeEvent(event as NetworkChangeSubscriptionNotifyEvent)
-			})
+			this.setStatus(await this.webSocket.sendEventWithResponse<INnounceClientRequestEvent, NnounceStatusEvent>(requestEvent));
+			const subscriptionPromise = new Promise<void>((resolve) => {
+				let resolved = false;
+				this.webSocket.subscribeToLiveEvent("networkChangeSubscriptionRequest", "networkChangeSubscriptionNotify", (event) => {
+					this.onNetworkChangeEvent(event as NetworkChangeSubscriptionNotifyEvent)
+					if (!resolved) {
+						resolved = true;
+						resolve();
+					}
+				});
+			});
+			await subscriptionPromise;
+			this.initialized = true;
 		} catch (e) {
 			logger.error("Error during init system definitions. Error: ", String(e));
 			throw e;

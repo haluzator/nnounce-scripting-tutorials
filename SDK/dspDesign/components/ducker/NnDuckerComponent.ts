@@ -14,18 +14,21 @@ export class NnDuckerComponent implements NnDspDuckerControl {
 	private readonly id: number | string;
 	private readonly webSocket: WebSocketCommunication;
 	private readonly duckerStatesUtil: NnDuckerStatesUtil;
+	private readonly  designUtil: DesignUtil;
 
 	/**
 	 * Constructor for initializing an instance with an identifier and WebSocket communication.
 	 *
 	 * @param {number|string} id - The unique identifier for the instance, which can be a number or a string.
 	 * @param {WebSocketCommunication} webSocket - The WebSocket communication instance used for establishing communication.
+	 * @param {designUtil} designUtil - Device design util.
 	 * @return {void}
 	 */
-	constructor(id: number | string, webSocket: WebSocketCommunication) {
+	constructor(id: number | string, webSocket: WebSocketCommunication, designUtil: DesignUtil) {
 		this.id = id;
 		this.webSocket = webSocket;
 		this.duckerStatesUtil = new NnDuckerStatesUtil(this.webSocket);
+		this.designUtil = designUtil;
 	}
 
 	/**
@@ -33,7 +36,7 @@ export class NnDuckerComponent implements NnDspDuckerControl {
 	 * @param activeChangeCb The callback function to be invoked each time the ducker priority state changes. Consumed boolean indicates whather priority input is active.
 	 */
 	public async onActiveChange(activeChangeCb: Consumer<boolean>): Promise<void> {
-		const dspDesign = await DesignUtil.loadDesign(this.webSocket);
+		const dspDesign = await this.designUtil.loadDesign();
 		if (dspDesign == null) {
 			return;
 		}

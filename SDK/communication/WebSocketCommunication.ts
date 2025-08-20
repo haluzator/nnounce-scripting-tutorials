@@ -101,7 +101,7 @@ export class WebSocketCommunication {
 	 * @param {boolean} [isSubscriptionEvent=false] - Indicates whether the event being sent is a subscription-based event.
 	 * @return {Promise<RESPONSE>} Returns a Promise that resolves with the response event of type RESPONSE if the operation is successful, or rejects if there's a failure or timeout.
 	 */
-	public async sendEventWithResponse<RESPONSE extends INnounceClientResultEvent, REQUEST extends INnounceClientRequestEvent>(requestEvent: REQUEST, isSubscriptionEvent: boolean = false): Promise<RESPONSE> {
+	public async sendEventWithResponse<REQUEST extends INnounceClientRequestEvent, RESPONSE extends INnounceClientResultEvent>(requestEvent: REQUEST, isSubscriptionEvent: boolean = false): Promise<RESPONSE> {
 		let timeout: number = 0;
 		const promise: Promise<RESPONSE> = new Promise((resolve, reject) => {
 			this.eventResultHandlers.set(requestEvent.requestId, (event) => {
@@ -262,6 +262,9 @@ export class WebSocketCommunication {
 	}
 
 	private disconnect() {
+		this.eventHandlers.forEach((value, key) => {
+			value[1] = false;
+		})
 		if (this.socket != null) {
 			this.stopSentHeartBeat();
 			const socket = this.socket;

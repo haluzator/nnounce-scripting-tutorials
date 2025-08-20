@@ -64,7 +64,6 @@ export type AnalogInputPinControl = {
  * - digital | analog
  */
 export class NnControlInputsDefinition {
-	private static INSTANCE: NnControlInputsDefinition;
 
 	private ioControlStates: IOControlStates;
 
@@ -77,13 +76,10 @@ export class NnControlInputsDefinition {
 	}
 
 	/**
-	 * Return singleton instance
+	 * Creates new instance
 	 */
 	public static getInstance(ioControlStates: IOControlStates) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new NnControlInputsDefinition(ioControlStates);
-		}
-		return this.INSTANCE;
+		return new NnControlInputsDefinition(ioControlStates);
 	}
 
 	/**

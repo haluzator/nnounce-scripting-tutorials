@@ -1,3 +1,5 @@
+import * as path from "jsr:@std/path";
+
 // Prompt user for HOSTNAME and API_KEY
 async function promptInput(prompt: string, required = false): Promise<string> {
 	let value = '';
@@ -23,7 +25,8 @@ async function findEnvFiles(dir: string): Promise<string[]> {
 	const envFiles: string[] = [];
 
 	for await (const entry of Deno.readDir(dir)) {
-		const fullPath = `${dir}/${entry.name}`;
+		// const fullPath = `${dir}/${entry.name}`;
+		const fullPath = path.join(dir, entry.name);
 		if (entry.isDirectory) {
 			const subEnvFiles = await findEnvFiles(fullPath);
 			envFiles.push(...subEnvFiles);
@@ -54,7 +57,7 @@ async function updateEnvFile(filePath: string, hostname: string, apiKey: string)
 }
 
 // Main function
-const hostname = await promptInput('Enter HOSTNAME (required): ', true);
+const hostname = await promptInput('Enter device HOSTNAME (required): ', true);
 const apiKey = await promptInput('Enter API_KEY (optional): ');
 
 const currentDir = Deno.cwd();

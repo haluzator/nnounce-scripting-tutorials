@@ -84,12 +84,6 @@ export type SystemVariables = {
  * Provides access to Nnounce device system information
  */
 export class NnSystemDefinition {
-
-	/**
-	 * Singleton instance of NnSystemDefinition
-	 */
-	private static INSTANCE: NnSystemDefinition;
-
 	/**
 	 * Control interface for system variables
 	 */
@@ -112,14 +106,12 @@ export class NnSystemDefinition {
 	}
 
 	/**
-	 * Return singleton instance
+	 * Create new instance
 	 */
 	public static getInstance(systemVariablesControl: SystemVariablesControlDefinition, systemNetwork: SystemDefinition) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new NnSystemDefinition(systemVariablesControl, systemNetwork);
-		}
-		return this.INSTANCE;
+		return new NnSystemDefinition(systemVariablesControl, systemNetwork);
 	}
+
 	/**
 	 * Returns network status of the device:
 	 *  - interfaces

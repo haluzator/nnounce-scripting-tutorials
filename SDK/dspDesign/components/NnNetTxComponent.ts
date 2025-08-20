@@ -2,6 +2,7 @@ import { ANnDspComponent } from "./NnDspComponent.ts";
 import { NnComponentName } from "./NnComponentName.ts";
 import { WebSocketCommunication } from "../../communication/WebSocketCommunication.ts";
 import { NnLoggerConfig } from "../../utils/LoggerUtil.ts";
+import { DesignUtil } from "../DesignUtil.ts";
 
 /**
  * Represents a network transmit component that extends the base `ANnDspComponent` class.
@@ -17,10 +18,11 @@ export class NnNetTxComponent extends ANnDspComponent {
 	 *
 	 * @param {number|string} componentId - The unique identifier for the component.
 	 * @param {WebSocketCommunication} webSocket - The WebSocket communication instance to be used for this component.
+	 * @param {DesignUtil} designUtil - Device design util.
 	 * @param {NnLoggerConfig} loggerConfig - The configuration settings for the logger.
 	 */
-	constructor(componentId: number | string, webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
-		super(componentId, NnComponentName.NET_TX_COMPONENT_NAME, webSocket, loggerConfig);
+	constructor(componentId: number | string, webSocket: WebSocketCommunication, designUtil: DesignUtil, loggerConfig: NnLoggerConfig) {
+		super(componentId, NnComponentName.NET_TX_COMPONENT_NAME, webSocket, designUtil, loggerConfig);
 	}
 
 }

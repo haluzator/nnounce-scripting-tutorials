@@ -1,4 +1,4 @@
-import { INnounceClientRequestEvent } from "../INnounceClientRequestEvent.ts";
+import { ISubscriptionEvent } from "../ISubscriptionEvent.ts";
 
 /**
  * Represents an event for subscribing to system variable change notifications.
@@ -8,6 +8,6 @@ import { INnounceClientRequestEvent } from "../INnounceClientRequestEvent.ts";
  *
  * The primary purpose of this event is to allow clients to subscribe to system variable changes.
  */
-export interface SystemVariableChangeSubscriptionRequestEvent extends INnounceClientRequestEvent {
-	responseTag: string
+export interface SystemVariableChangeSubscriptionRequestEvent extends ISubscriptionEvent {
+
 }

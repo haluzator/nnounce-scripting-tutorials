@@ -28,6 +28,9 @@ const device = await connectDevice("hostnameOrIp", "apiKeyCanBeNull").connection
 // rest of the code
 ```
 
+Second parameter passed to `connectDevice()` function is used as a authentication token - you need to set it, if API key is required in remote device setting.
+More on API keys can be found in the nnounce configuration guide at [https://docs.simpleway.cloud/nnounce/docs/device-control](https://docs.simpleway.cloud/nnounce/docs/device-control) and [https://docs.simpleway.cloud/nnounce/docs/users#set-api-key](https://docs.simpleway.cloud/nnounce/docs/users#set-api-key).
+
 ## Sample VS Code workspace
 Sample workspace is prepared to connect to multiple nnounce devices.
 

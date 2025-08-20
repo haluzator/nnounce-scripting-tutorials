@@ -6,8 +6,6 @@ import { Consumer } from "./utils/FunctionalInterfaces.ts";
  * Define API for working with snmp traps
  */
 export class NnSnmpDefinition {
-	public static INSTANCE: NnSnmpDefinition;
-
 	private webSocket: WebSocketCommunication;
 
 	/**
@@ -20,13 +18,10 @@ export class NnSnmpDefinition {
 	}
 
 	/**
-	 * Return singleton instance
+	 * Create new instance
 	 */
 	public static getInstance(webSocket: WebSocketCommunication) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new NnSnmpDefinition(webSocket);
-		}
-		return this.INSTANCE;
+		return new NnSnmpDefinition(webSocket);
 	}
 
 	/**

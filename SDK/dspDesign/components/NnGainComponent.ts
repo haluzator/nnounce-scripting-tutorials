@@ -2,6 +2,7 @@ import { ANnDspComponent } from "./NnDspComponent.ts";
 import { NnComponentName } from "./NnComponentName.ts";
 import { WebSocketCommunication } from "../../communication/WebSocketCommunication.ts";
 import { NnLoggerConfig } from "../../utils/LoggerUtil.ts";
+import { DesignUtil } from "../DesignUtil.ts";
 
 /**
  * Represents a gain component extending the base `ANnDspComponent`.
@@ -24,10 +25,11 @@ export class NnGainComponent extends ANnDspComponent {
 	 *
 	 * @param {number | string} id - The unique identifier for the component.
 	 * @param {WebSocketCommunication} webSocket - The WebSocket communication instance for handling data exchange.
+	 * @param {designUtil} designUtil - Device design util
 	 * @param {NnLoggerConfig} loggerConfig - The configuration object for the logger.
 	 */
-	constructor(id: number | string, webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
-		super(id, NnComponentName.GAIN_COMPONENT_NAME, webSocket, loggerConfig);
+	constructor(id: number | string, webSocket: WebSocketCommunication, designUtil: DesignUtil, loggerConfig: NnLoggerConfig) {
+		super(id, NnComponentName.GAIN_COMPONENT_NAME, webSocket, designUtil, loggerConfig);
 	}
 
 }

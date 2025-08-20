@@ -54,7 +54,6 @@ type ToggleButtonControl = {
 }
 
 export class NnButtonsDefinition {
-	private static INSTANCE: NnButtonsDefinition;
 
 	private buttonStates: ButtonStates;
 
@@ -63,13 +62,10 @@ export class NnButtonsDefinition {
 	}
 
 	/**
-	 * Return singleton instance
+	 * Crate new instance
 	 */
 	public static getInstance(buttonStates: ButtonStates) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new NnButtonsDefinition(buttonStates);
-		}
-		return this.INSTANCE;
+		return new NnButtonsDefinition(buttonStates);
 	}
 
 	/**
@@ -90,7 +86,7 @@ export class NnButtonsDefinition {
 			logger.warn(`Button ${buttonName} is not configured in momentary mode!`);
 		}
 		return {
-			getValue(): boolean {
+			getValue: (): boolean => {
 				return this.buttonStates.getButtonActive(buttonName);
 			},
 			onPress: (onPressCb) => {
@@ -119,7 +115,7 @@ export class NnButtonsDefinition {
 			logger.warn(`Button ${buttonName} is not configured in toggle mode!`);
 		}
 		return {
-			getValue(): boolean {
+			getValue: (): boolean => {
 				return this.buttonStates.getButtonActive(buttonName);
 			},
 			onChange: (onChangeCb) => {
@@ -130,7 +126,7 @@ export class NnButtonsDefinition {
 	}
 
 	private reactOnButtonState(buttonName: string, changeCallback: Consumer<boolean>) {
-		return this.buttonStates.onButtonChange(buttonName, changeCallback);
+		return this.buttonStates.addButtonListener(buttonName, changeCallback);
 	}
 
 	private getButtonState(buttonName: string): boolean {

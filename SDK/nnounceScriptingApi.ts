@@ -128,7 +128,7 @@ export class NnounceDevice implements NnounceScriptingApi {
 
 		this.connectionOptions = connectionOptions;
 		if (apiKey) {
-			logger.info("Connecting to Nnounce device {} with api key {}", hostname, apiKey);
+			logger.info("Connecting to Nnounce device {} with api key {}*****", hostname, apiKey.substring(0, 4));
 		} else {
 			logger.info("Connecting to Nnounce device {} without api key", hostname);
 		}
@@ -139,20 +139,24 @@ export class NnounceDevice implements NnounceScriptingApi {
 		this.pagingRouter = NnPagingRouterDefinition.getInstance(webSocket, nnLoggerConfig);
 		this.controlInputs = NnControlInputsDefinition.getInstance(ioControlStates);
 		this.controlOutputs = NnControlOutputsDefinition.getInstance(webSocket, nnLoggerConfig, ioControlStates);
-		this.dsp = NnDspDefinition.getInstance(webSocket, nnLoggerConfig);
+		const designUtil = DesignUtil.getInstance(webSocket);
+		this.dsp = NnDspDefinition.getInstance(webSocket, nnLoggerConfig, designUtil);
 		this.logger = logger;
 		this.loggerConfig = nnLoggerConfig;
 		this.snmp = NnSnmpDefinition.getInstance(webSocket);
-		this.system = NnSystemDefinition.getInstance(SystemVariablesControlDefinition.getInstance(webSocket), SystemDefinition.getInstance(webSocket));
+		const systemVariablesControl = SystemVariablesControlDefinition.getInstance(webSocket);
+		const systemDefinition = SystemDefinition.getInstance(webSocket);
+		this.system = NnSystemDefinition.getInstance(systemVariablesControl, systemDefinition);
 		this.buttons = NnButtonsDefinition.getInstance(buttonStates)
 		this.util = NnUtilDefinition.getInstance();
+
 		this._connectionPromise =
 			Promise.all([
-					SystemVariablesControlDefinition.initInstance(),
-					SystemDefinition.initInstance(),
-					IOControlStates.initInstance(),
-					DesignUtil.initDesign(webSocket),
-					ButtonStates.initInstance(),
+					systemVariablesControl.init(),
+					systemDefinition.init(),
+					ioControlStates.init(),
+					designUtil.initDesign(),
+					buttonStates.init(),
 				]
 			).then(() => {
 				logger.info("Init mandatory services finished.");

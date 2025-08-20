@@ -5,6 +5,7 @@ import { NnDuckerComponent } from "./dspDesign/components/ducker/NnDuckerCompone
 import { NnDspComponentControl } from "./dspDesign/components/NnDspComponentControl.ts";
 import { WebSocketCommunication } from "./communication/WebSocketCommunication.ts";
 import { NnLoggerConfig } from "./utils/LoggerUtil.ts";
+import { DesignUtil } from "./dspDesign/DesignUtil.ts";
 
 /**
  * Represents the control interface for managing a DSP Ducker's behavior.
@@ -21,8 +22,6 @@ export interface NnDspDuckerControl {
  * Define API for updating components
  */
 export class NnDspDefinition {
-	private static INSTANCE: NnDspDefinition;
-
 	private _components: NnDspComponent;
 
 	/**
@@ -30,9 +29,10 @@ export class NnDspDefinition {
 	 *
 	 * @param {WebSocketCommunication} webSocket - The WebSocket communication instance used for message exchange.
 	 * @param {NnLoggerConfig} loggerConfig - Configuration instance for logger settings.
+	 * @param {DesignUtil} designUtil - Device design util instance
 	 */
-	private constructor(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
-		this._components = NnDspComponent.getInstance(webSocket, loggerConfig);
+	private constructor(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig, designUtil: DesignUtil) {
+		this._components = NnDspComponent.getInstance(webSocket, designUtil, loggerConfig);
 	}
 
 	/**
@@ -43,18 +43,16 @@ export class NnDspDefinition {
 	}
 
 	/**
-	 * Retrieves the singleton instance of the NnDspDefinition class. If the instance does not exist, it initializes a new one
-	 * using the provided WebSocketCommunication and logger configuration.
+	 * Creates new instance of the NnDspDefinition class
+	 * using the provided WebSocketCommunication, logger configuration and DesignUtil.
 	 *
 	 * @param {WebSocketCommunication} webSocket - The WebSocket communication instance to be used.
 	 * @param {NnLoggerConfig} loggerConfig - The logger configuration for the instance.
+	 * @param {DesignUtil} designUtil - Device design util.
 	 * @return {NnDspDefinition} The singleton instance of NnDspDefinition.
 	 */
-	public static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new NnDspDefinition(webSocket, loggerConfig);
-		}
-		return this.INSTANCE;
+	public static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig, designUtil: DesignUtil) {
+		return new NnDspDefinition(webSocket, loggerConfig, designUtil);
 	}
 }
 
@@ -62,30 +60,28 @@ export class NnDspDefinition {
  * Util for working with components
  */
 export class NnDspComponent {
-	private static INSTANCE: NnDspComponent;
-
 	private webSocket: WebSocketCommunication;
 	private loggerConfig: NnLoggerConfig;
+	private designUtil: DesignUtil;
 
 	/**
 	 * Constructs an instance of the class with the specified WebSocket communication handler and logger configuration.
 	 *
 	 * @param {WebSocketCommunication} websocket - The WebSocket communication handler used for data transmission.
+	 * @param {DesignUtil} designUtil - Device design util
 	 * @param {NnLoggerConfig} loggerConfig - The configuration settings for the logger.
 	 */
-	private constructor(websocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
+	constructor(websocket: WebSocketCommunication, designUtil: DesignUtil, loggerConfig: NnLoggerConfig) {
 		this.webSocket = websocket;
 		this.loggerConfig = loggerConfig;
+		this.designUtil = designUtil;
 	}
 
 	/**
-	 * Return singleton instance
+	 * Create new instance
 	 */
-	public static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new NnDspComponent(webSocket, loggerConfig);
-		}
-		return this.INSTANCE;
+	public static getInstance(webSocket: WebSocketCommunication, designUtil: DesignUtil, loggerConfig: NnLoggerConfig) {
+		return new NnDspComponent(webSocket, designUtil, loggerConfig);
 	}
 
 	/**
@@ -95,7 +91,7 @@ export class NnDspComponent {
 	 * - string - name of the component
 	 */
 	public gain(id: number | string): NnDspComponentControl {
-		return new NnGainComponent(id, this.webSocket, this.loggerConfig);
+		return new NnGainComponent(id, this.webSocket, this.designUtil, this.loggerConfig);
 	}
 
 	/**
@@ -105,7 +101,7 @@ export class NnDspComponent {
 	 * - string - name of the component
 	 */
 	public netRx(id: number | string): NnDspComponentControl {
-		return new NnNetRxComponent(id, this.webSocket, this.loggerConfig);
+		return new NnNetRxComponent(id, this.webSocket, this.designUtil, this.loggerConfig);
 	}
 
 	/**
@@ -115,7 +111,7 @@ export class NnDspComponent {
 	 * - string - name of the component
 	 */
 	public netTx(id: number | string): NnDspComponentControl {
-		return new NnNetTxComponent(id, this.webSocket, this.loggerConfig);
+		return new NnNetTxComponent(id, this.webSocket, this.designUtil, this.loggerConfig);
 	}
 
 	/**
@@ -125,6 +121,6 @@ export class NnDspComponent {
 	 * - string - name of the component
 	 */
 	public ducker(id: number | string): NnDspDuckerControl {
-		return new NnDuckerComponent(id, this.webSocket);
+		return new NnDuckerComponent(id, this.webSocket, this.designUtil);
 	}
 }

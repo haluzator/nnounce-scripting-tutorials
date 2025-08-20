@@ -30,6 +30,15 @@ type AnalogInputPinControl = {
 };
 
 /**
+ * Represents the configuration of a component node in a DSP design.
+ *
+ * @property {string} type - The type of the component.
+ */
+interface ANpdConfig {
+    type: string;
+}
+
+/**
  * Represents a function that accepts two input arguments and does not return a result.
  *
  * @template T - The type of the first input argument to the operation.
@@ -40,20 +49,19 @@ type BiConsumer<T, R> = {
 };
 
 class ButtonStates {
-    private static INSTANCE;
     private buttonStates;
     private buttonChangeListeners;
     private webSocket;
     private initialized;
     constructor(webSocket: WebSocketCommunication);
-    static initInstance(): Promise<void>;
+    init(): Promise<void>;
     /**
      * Return singleton instance
      */
     static getInstance(webSocket: WebSocketCommunication): ButtonStates;
     getButtonNames(): string[];
     getButtonActive(buttonName: string): boolean | undefined;
-    onButtonChange(buttonName: string, listener: Consumer<boolean>): void;
+    addButtonListener(buttonName: string, listener: Consumer<boolean>): void;
     private onButtonStateEvent;
 }
 
@@ -76,7 +84,6 @@ declare module 'nnounceConnector' {
 export function connectDevice(hostname: string, apiKey: string | null, connectionOptions?: ConnectionOptions): NnounceScriptingApi;
 }
 
-
 /**
  * Represents the configuration options for a connection.
  *
@@ -96,6 +103,95 @@ interface ConnectionOptions {
 type Consumer<T> = {
     (data: T): void;
 };
+
+/**
+ * The DesignHelper class provides functionality to assist with the design loading process.
+ * It tracks the state of design loading, handles events, and manages runtime processing logic.
+ *
+ * Properties:
+ * - partialDesign: The loaded partial design object, if applicable.
+ * - timestamp: A numeric timestamp indicating the last update time for the design.
+ * - state: The current state of the design loading process, represented by an enum of type LoadDesignState.
+ * - loadFinishConsumers: An array of consumer functions that are triggered upon the completion of design loading.
+ * - loaderIdentifier: An optional identifier for the design loader being used.
+ */
+class DesignHelper {
+    partialDesign?: PartialDesign;
+    timestamp: number;
+    state: LoadDesignState;
+    loadFinishConsumers: Array<Consumer<Error | null>>;
+    loaderIdentifier?: string;
+    /**
+     * Initializes a new instance of the class with default properties.
+     * The `timestamp` is set to 0, `state` is set to `LoadDesignState.NONE`,
+     * `loadFinishConsumers` is initialized as an empty array, and
+     *
+     * @return {Object} An instance of the class with default values for all properties.
+     */
+    constructor();
+}
+
+/**
+ * Represents the metadata associated with a DSP design.
+ *
+ * This interface defines the expected format for design metadata,
+ * where each property is optional and may contain a string value.
+ *
+ * Properties:
+ * @property {string} name - The name of the design.
+ * @property {number} api_version - The version of the API used to create the design.
+ * @property {number} last_modified_runtime - The timestamp of the last modification to the runtime configuration.
+ * @property {number} last_modified_design - The timestamp of the last modification to the design.
+ * @property {string} device_type - The target type of device.
+ */
+interface DesignMetadata {
+    name?: string;
+    api_version?: number;
+    last_modified_runtime?: number;
+    last_modified_design?: number;
+    device_type?: string;
+}
+
+/**
+ * Utility class for managing the design metadata and communicating with a WebSocket for design-related operations.
+ * This class handles loading, initializing, and maintaining design state and metadata, and it facilitates communication
+ * between the client application and a remote WebSocket server for real-time design updates.
+ */
+class DesignUtil {
+    private static readonly DESIRED_COMPONENT_TYPES;
+    private designMetadata;
+    private webSocket;
+    private constructor();
+    static getInstance(websocket: WebSocketCommunication): DesignUtil;
+    /**
+     * Initializes the design by subscribing to necessary events and loading design metadata.
+     *
+     * @return {Promise<void>} A Promise that resolves when the design initialization is complete.
+     * @throws {Error} If an error occurs during the initialization process.
+     */
+    initDesign(): Promise<void>;
+    /**
+     * This method loads the design data.
+     *
+     * @return {Object} The partial design metadata loaded during the process.
+     * @throws Will throw an error if the loading process fails.
+     */
+    loadDesign(): Promise<PartialDesign>;
+    /**
+     * Retrieves the component identifier as a string. If the input ID is a string, it attempts to map it
+     * to a numerical ID using the provided design. Otherwise, it converts the numerical ID directly to a string.
+     *
+     * @param {PartialDesign} dspDesign - The design object containing the mapping between component names and IDs.
+     * @param {number | string} id - The component identifier, which can either be a number or a string.
+     * @return {string} The component identifier represented as a string. If a matching ID is not found for a string input, returns the input string.
+     */
+    static getComponentId(dspDesign: PartialDesign, id: number | string): string;
+    private processRuntimeChangedNotifyEvent;
+    private loadDesignInternal;
+    private notifyAllDesignConsumers;
+    getDesignMetadata(): DesignHelper;
+    private static getIdentifier;
+}
 
 /**
  * Represents a control interface for input pin in digital mode, capable of reading the pin state and monitoring changes in its state.
@@ -268,7 +364,6 @@ interface IoControl {
  * This includes managing state updates and notifying listeners of input changes.
  */
 class IOControlStates {
-    private static INSTANCE;
     /**
      * Represents a mapping of output pin numbers to their respective IoControl instances.
      *
@@ -323,27 +418,25 @@ class IOControlStates {
      */
     constructor(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig);
     /**
-     * Returns the singleton instance of IOControlStates.
-     * If the instance doesn't exist, it creates a new one with the provided parameters.
+     * Returns instance of IOControlStates.
      *
      * @param {WebSocketCommunication} webSocket - WebSocket communication instance for sending/receiving events
      * @param {NnLoggerConfig} loggerConfig - Configuration for logging
-     * @return {IOControlStates} The singleton instance of IOControlStates
+     * @return {IOControlStates} Instance of IOControlStates
      */
     static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig): IOControlStates;
     /**
-     * Initializes the already created singleton instance by setting up WebSocket
+     * Initializes the instance by setting up WebSocket
      * subscriptions for IO pin state updates.
      *
      * This method must be called after getInstance() and before using any IO control
      * functionality. It sends a subscription request to receive regular updates of
      * pin states and initializes internal state tracking.
      *
-     * @throws {Error} If the instance hasn't been created yet via getInstance()
      * @throws {Error} If the initialization process fails
      * @return {Promise<void>} A promise that resolves when initialization is complete
      */
-    static initInstance(): Promise<void>;
+    init(): Promise<void>;
     /**
      * Retrieves the IoControl instance for a specified output pin.
      *
@@ -416,6 +509,22 @@ enum IoPinMode {
 enum IoPinType {
     CONTROL = "control",
     GPIO = "gpio"
+}
+
+/**
+ * Enum representing the possible states of a design loading process.
+ *
+ * @enum {number}
+ * @property {number} NONE - Represents the initial or default state where no loading has started.
+ * @property {number} DONE - Indicates that the loading process was completed successfully.
+ * @property {number} LOADING - Denotes that the loading process is currently in progress.
+ * @property {number} ERROR - Signifies that an error occurred during the loading process.
+ */
+enum LoadDesignState {
+    NONE = 0,
+    DONE = 1,
+    LOADING = 2,
+    ERROR = 3
 }
 
 /**
@@ -510,11 +619,10 @@ type NetworkStatus = {
 };
 
 class NnButtonsDefinition {
-    private static INSTANCE;
     private buttonStates;
     private constructor();
     /**
-     * Return singleton instance
+     * Crate new instance
      */
     static getInstance(buttonStates: ButtonStates): NnButtonsDefinition;
     /**
@@ -544,7 +652,6 @@ class NnButtonsDefinition {
  * - digital | analog
  */
 class NnControlInputsDefinition {
-    private static INSTANCE;
     private ioControlStates;
     /**
      * Constructor for initializing an instance of the class with the given IO control states.
@@ -552,7 +659,7 @@ class NnControlInputsDefinition {
      */
     private constructor();
     /**
-     * Return singleton instance
+     * Creates new instance
      */
     static getInstance(ioControlStates: IOControlStates): NnControlInputsDefinition;
     /**
@@ -600,7 +707,7 @@ class NnControlOutputsDefinition {
      */
     private constructor();
     /**
-     * Return singleton instance
+     * Creates new instance
      */
     static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig, ioControlStates: IOControlStates): NnControlOutputsDefinition;
     /**
@@ -635,20 +742,21 @@ class NnControlOutputsDefinition {
  * Util for working with components
  */
 class NnDspComponent {
-    private static INSTANCE;
     private webSocket;
     private loggerConfig;
+    private designUtil;
     /**
      * Constructs an instance of the class with the specified WebSocket communication handler and logger configuration.
      *
      * @param {WebSocketCommunication} websocket - The WebSocket communication handler used for data transmission.
+     * @param {DesignUtil} designUtil - Device design util
      * @param {NnLoggerConfig} loggerConfig - The configuration settings for the logger.
      */
-    private constructor();
+    constructor(websocket: WebSocketCommunication, designUtil: DesignUtil, loggerConfig: NnLoggerConfig);
     /**
-     * Return singleton instance
+     * Create new instance
      */
-    static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig): NnDspComponent;
+    static getInstance(webSocket: WebSocketCommunication, designUtil: DesignUtil, loggerConfig: NnLoggerConfig): NnDspComponent;
     /**
      * Method return gain component by its ID/name or null if none exists
      * @param id number|string
@@ -717,13 +825,13 @@ interface NnDspComponentControl {
  * Define API for updating components
  */
 class NnDspDefinition {
-    private static INSTANCE;
     private _components;
     /**
      * Private constructor for initializing the components using the provided WebSocket communication and logger configuration.
      *
      * @param {WebSocketCommunication} webSocket - The WebSocket communication instance used for message exchange.
      * @param {NnLoggerConfig} loggerConfig - Configuration instance for logger settings.
+     * @param {DesignUtil} designUtil - Device design util instance
      */
     private constructor();
     /**
@@ -731,14 +839,15 @@ class NnDspDefinition {
      */
     get components(): NnDspComponent;
     /**
-     * Retrieves the singleton instance of the NnDspDefinition class. If the instance does not exist, it initializes a new one
-     * using the provided WebSocketCommunication and logger configuration.
+     * Creates new instance of the NnDspDefinition class
+     * using the provided WebSocketCommunication, logger configuration and DesignUtil.
      *
      * @param {WebSocketCommunication} webSocket - The WebSocket communication instance to be used.
      * @param {NnLoggerConfig} loggerConfig - The logger configuration for the instance.
+     * @param {DesignUtil} designUtil - Device design util.
      * @return {NnDspDefinition} The singleton instance of NnDspDefinition.
      */
-    static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig): NnDspDefinition;
+    static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig, designUtil: DesignUtil): NnDspDefinition;
 }
 
 /**
@@ -792,7 +901,6 @@ declare module 'nnounceDevice' {
  */
 export function nnounceDevice(connectionOptions?: ConnectionOptions): NnounceScriptingApi;
 }
-
 
 /**
  * Nnounce scripting interface.
@@ -871,7 +979,6 @@ interface NnounceScriptingApi {
  * </ul>
  */
 class NnPagingRouterDefinition {
-    private static INSTANCE;
     private callPrepareWaitingMap;
     private callTimeoutMap;
     private webSocket;
@@ -885,7 +992,7 @@ class NnPagingRouterDefinition {
      */
     private constructor();
     /**
-     * Return singleton instance
+     * Create new instance
      */
     static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig): NnPagingRouterDefinition;
     /**
@@ -914,7 +1021,6 @@ class NnPagingRouterDefinition {
  * Define API for working with snmp traps
  */
 class NnSnmpDefinition {
-    static INSTANCE: NnSnmpDefinition;
     private webSocket;
     /**
      * Creates an instance of the class with a specified WebSocketCommunication object.
@@ -923,7 +1029,7 @@ class NnSnmpDefinition {
      */
     private constructor();
     /**
-     * Return singleton instance
+     * Create new instance
      */
     static getInstance(webSocket: WebSocketCommunication): NnSnmpDefinition;
     /**
@@ -937,10 +1043,6 @@ class NnSnmpDefinition {
  * Provides access to Nnounce device system information
  */
 class NnSystemDefinition {
-    /**
-     * Singleton instance of NnSystemDefinition
-     */
-    private static INSTANCE;
     /**
      * Control interface for system variables
      */
@@ -957,7 +1059,7 @@ class NnSystemDefinition {
      */
     private constructor();
     /**
-     * Return singleton instance
+     * Create new instance
      */
     static getInstance(systemVariablesControl: SystemVariablesControlDefinition, systemNetwork: SystemDefinition): NnSystemDefinition;
     /**
@@ -1015,6 +1117,18 @@ class NnSystemDefinition {
            * @param durationMs
            */
           sleep(durationMs: number): Promise<unknown>;
+      }
+
+      /**
+       * Partial design holding only supported runtime data (for components NetTx. NetRx, Gain),
+       * which are updated on change, design metadata and map for component name to component ID
+       */
+      interface PartialDesign {
+          metadata: DesignMetadata;
+          runtime: {
+              [key: string]: ANpdConfig;
+          };
+          nameToId: Map<string, number>;
       }
 
       /**
@@ -1078,6 +1192,19 @@ class NnSystemDefinition {
            */
           audioSource: RemoteFileAudioSource;
       };
+
+
+declare module 'rawSocket' {
+export class RawSocket {
+    private webSocket;
+    private constructor();
+    static connectLocal(connectionOptions?: ConnectionOptions): RawSocket;
+    static connectRemote(hostname: string, apiKey: string | null, connectionOptions?: ConnectionOptions): RawSocket;
+    registerEventHandler(eventType: string, eventHandler: Consumer<IEvent>): void;
+    sendEvent(event: IEvent): void;
+    sendEventWithResponse<REQUEST extends INnounceClientRequestEvent, RESPONSE extends INnounceClientResultEvent>(request: REQUEST): Promise<RESPONSE>;
+}
+}
 
       /**
        * Represents a control interface for output pin in relay mode.
@@ -1191,7 +1318,6 @@ class NnSystemDefinition {
        * such as firmware version, hardware details, and network status using a WebSocket communication channel.
        */
       class SystemDefinition {
-          private static INSTANCE;
           private webSocket;
           private status;
           private initialized;
@@ -1202,17 +1328,16 @@ class NnSystemDefinition {
            */
           constructor(webSocket: WebSocketCommunication);
           /**
-           * Returns the singleton instance of SystemDefinition.
-           * If the instance doesn't exist, creates a new one with the provided WebSocket.
+           * Returns a new instance of SystemDefinition.
            *
            * @param webSocket - The WebSocket communication instance used to interact with the device
-           * @returns The singleton instance of SystemDefinition
+           * @returns New instance of SystemDefinition
            */
           static getInstance(webSocket: WebSocketCommunication): SystemDefinition;
           /**
            * Initialize the system definition instance and set the current status, which will be automatically updated whenever a change occurs
            */
-          static initInstance(): Promise<void>;
+          init(): Promise<void>;
           /**
            * Sets the current status of the system from a status event.
            *
@@ -1309,7 +1434,6 @@ class NnSystemDefinition {
        * System variables control to manage variables from server
        */
       class SystemVariablesControlDefinition {
-          private static INSTANCE;
           private webSocket;
           private systemVariablesMap;
           private initialized;
@@ -1321,17 +1445,16 @@ class NnSystemDefinition {
            */
           private constructor();
           /**
-           * Returns the singleton instance of the SystemVariablesControlDefinition.
-           * If the instance does not exist, it creates one using the provided WebSocketCommunication.
+           * Returns a new instance of the SystemVariablesControlDefinition.
            *
-           * @param {WebSocketCommunication} webSocket - The WebSocketCommunication object used to initialize the instance if it does not exist.
-           * @return {SystemVariablesControlDefinition} The singleton instance of the SystemVariablesControlDefinition.
+           * @param {WebSocketCommunication} webSocket - The WebSocketCommunication object used to initialize the instance.
+           * @return {SystemVariablesControlDefinition} New instance of the SystemVariablesControlDefinition.
            */
           static getInstance(webSocket: WebSocketCommunication): SystemVariablesControlDefinition;
           /**
            * Initialize system variables control instance and set current system variables to map
            */
-          static initInstance(): Promise<void>;
+          init(): Promise<void>;
           /**
            * Get variable value by name
            * @param name
@@ -1421,7 +1544,7 @@ class NnSystemDefinition {
            * @param {boolean} [isSubscriptionEvent=false] - Indicates whether the event being sent is a subscription-based event.
            * @return {Promise<RESPONSE>} Returns a Promise that resolves with the response event of type RESPONSE if the operation is successful, or rejects if there's a failure or timeout.
            */
-          sendEventWithResponse<RESPONSE extends INnounceClientResultEvent, REQUEST extends INnounceClientRequestEvent>(requestEvent: REQUEST, isSubscriptionEvent?: boolean): Promise<RESPONSE>;
+          sendEventWithResponse<REQUEST extends INnounceClientRequestEvent, RESPONSE extends INnounceClientResultEvent>(requestEvent: REQUEST, isSubscriptionEvent?: boolean): Promise<RESPONSE>;
           /**
            * Adds an event handler for a specified event type.
            * Registers a callback function to handle events of the given type.

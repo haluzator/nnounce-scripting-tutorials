@@ -97,13 +97,10 @@ export class NnControlOutputsDefinition {
 	}
 
 	/**
-	 * Return singleton instance
+	 * Creates new instance
 	 */
 	public static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig, ioControlStates: IOControlStates) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new NnControlOutputsDefinition(webSocket, loggerConfig, ioControlStates);
-		}
-		return this.INSTANCE;
+		return new NnControlOutputsDefinition(webSocket, loggerConfig, ioControlStates);
 	}
 
 	/**

@@ -123,7 +123,6 @@ export interface RemoteFileAudioSource {
  * </ul>
  */
 export class NnPagingRouterDefinition {
-	private static INSTANCE: NnPagingRouterDefinition;
 	private callPrepareWaitingMap: Map<string, number> = new Map();
 	private callTimeoutMap: Map<string, number> = new Map();
 	private webSocket: WebSocketCommunication;
@@ -145,13 +144,10 @@ export class NnPagingRouterDefinition {
 	}
 
 	/**
-	 * Return singleton instance
+	 * Create new instance
 	 */
 	public static getInstance(webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new NnPagingRouterDefinition(webSocket, loggerConfig);
-		}
-		return this.INSTANCE;
+		return new NnPagingRouterDefinition(webSocket, loggerConfig);
 	}
 
 	/**
@@ -167,7 +163,7 @@ export class NnPagingRouterDefinition {
 		const callPrepareEvent = createCallPrepareEventLocalFile(spec);
 
 		this.callPrepareWaitingMap.set(callPrepareEvent.actionId, setTimeout(() => {
-			// it's already time outed. Just delete it.
+			// it's already timed out. Just delete it.
 			if (this.callPrepareWaitingMap.delete(callPrepareEvent.actionId)) {
 				this.loggerConfig.isEnabledInternal() && logger.warn("Call prepare result wasn't receive in 30 seconds");
 			}
@@ -191,7 +187,7 @@ export class NnPagingRouterDefinition {
 		const callPrepareEvent = createCallPrepareEventRemoteFile(spec);
 
 		this.callPrepareWaitingMap.set(callPrepareEvent.actionId, setTimeout(() => {
-			// it's already time outed. Just delete it.
+			// it's already timed out. Just delete it.
 			if (this.callPrepareWaitingMap.delete(callPrepareEvent.actionId)) {
 				this.loggerConfig.isEnabledInternal() && logger.warn("Call prepare result wasn't receive in 30 seconds");
 			}
@@ -218,7 +214,7 @@ export class NnPagingRouterDefinition {
 	private onCallPrepareResultEvent(event: CallPrepareResultEvent) {
 		const activeCallPrepareWaiting = this.callPrepareWaitingMap.get(event.actionId);
 		if (!activeCallPrepareWaiting) {
-			this.loggerConfig.isEnabledInternal() && logger.warn("Prepare call '{}' was already time outed", event.actionId);
+			this.loggerConfig.isEnabledInternal() && logger.warn("Prepare call '{}' was already timed out", event.actionId);
 			return;
 		}
 		this.loggerConfig.isEnabledInternal() && logger.debug("Call '{}' was prepared", event.actionId);
@@ -243,7 +239,7 @@ export class NnPagingRouterDefinition {
 	private onCallResultEvent(event: CallResultEvent) {
 		const activeCallWaiting = this.callTimeoutMap.get(event.actionId);
 		if (!activeCallWaiting) {
-			this.loggerConfig.isEnabledInternal() && logger.warn("Call '{}' was already time outed", event.actionId);
+			this.loggerConfig.isEnabledInternal() && logger.warn("Call '{}' was already timed out", event.actionId);
 			return;
 		}
 

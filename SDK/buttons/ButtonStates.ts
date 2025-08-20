@@ -4,7 +4,6 @@ import { logger } from "../utils/LoggerUtil.ts";
 import { Consumer } from "../utils/FunctionalInterfaces.ts";
 
 export class ButtonStates {
-	private static INSTANCE: ButtonStates;
 
 	private buttonStates: Map<string/*pin*/, boolean /* active*/> = new Map();
 
@@ -16,19 +15,25 @@ export class ButtonStates {
 		this.webSocket = webSocket;
 	}
 
-	public static async initInstance() {
-		if (!this.INSTANCE) {
-			throw new Error("Button states are not yet created!");
-		}
-		if (this.INSTANCE.initialized) {
+	public async init() {
+		if (this.initialized) {
 			return;
 		}
 
 		try {
-			this.INSTANCE.webSocket.subscribeToLiveEvent("buttonStatesSubscriptionRequest", "buttonStatesSubscriptionNotify", (event) => {
-				this.INSTANCE.onButtonStateEvent((event as ButtonStatesSubscriptionNotify).data);
-			})
-			this.INSTANCE.initialized = true;
+			const subscriptionPromise = new Promise<void>((resolve) => {
+				let resolved = false;
+
+				this.webSocket.subscribeToLiveEvent("buttonStatesSubscriptionRequest", "buttonStatesSubscriptionNotify", (event) => {
+					this.onButtonStateEvent((event as ButtonStatesSubscriptionNotify).data);
+					if (!resolved) {
+						resolved = true;
+						resolve();
+					}
+				});
+			});
+			await subscriptionPromise;
+			this.initialized = true;
 		} catch (e) {
 			logger.error("Error during init button states. Error: ", String(e));
 			throw e;
@@ -40,10 +45,7 @@ export class ButtonStates {
 	 * Return singleton instance
 	 */
 	public static getInstance(webSocket: WebSocketCommunication) {
-		if (!this.INSTANCE) {
-			this.INSTANCE = new ButtonStates(webSocket);
-		}
-		return this.INSTANCE;
+		return new ButtonStates(webSocket);
 	}
 
 	public getButtonNames(): string[] {
@@ -54,10 +56,13 @@ export class ButtonStates {
 		return this.buttonStates.get(buttonName);
 	}
 
-	public onButtonChange(buttonName: string, listener: Consumer<boolean>) {
+	public addButtonListener(buttonName: string, listener: Consumer<boolean>) {
 		const changeCbs = this.buttonChangeListeners.get(buttonName) ?? [];
 		changeCbs.push(listener)
 		this.buttonChangeListeners.set(buttonName, changeCbs);
+		if (this.buttonStates.has(buttonName)) {
+			listener(this.buttonStates.get(buttonName) as boolean);
+		}
 	}
 
 	private onButtonStateEvent(states: Array<ButtonState>) {

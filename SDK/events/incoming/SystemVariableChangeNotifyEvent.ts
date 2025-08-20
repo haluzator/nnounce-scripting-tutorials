@@ -6,11 +6,11 @@ import { IEvent } from "../IEvent.ts";
  * This interface extends the `IEvent` interface and provides specific details
  * regarding the name and the new value of the changed system variable.
  *
- * The `name` property holds the name of the system variable that was modified,
- * and the `value` property contains its updated value.
+ * Map keys hold the names of the system variables that were modified,
+ * and the corresponding values contain its updated value.
  *
  */
 export interface SystemVariableChangeNotifyEvent extends IEvent {
-	name: string;
-	value: string;
+	data: Map<string, string>;
+	fullState: boolean;
 }

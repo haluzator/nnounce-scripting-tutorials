@@ -13,7 +13,7 @@ const CHECK_DESIGN_UPDATE_ATTEMPT: number = 5;
  * Class representing the runtime metadata of a design component.
  * Used for managing runtime and design-time configurations and metadata information.
  */
-class NpdComponentMetadata{
+class NpdComponentMetadata {
 
 	/**
 	 * Runtime component
@@ -63,6 +63,7 @@ export class ANnDspComponent implements NnDspComponentControl {
 	private componentId: string;
 	private webSocket: WebSocketCommunication;
 	private loggerConfig: NnLoggerConfig;
+	private designUtil: DesignUtil;
 
 	/**
 	 * Constructs an instance of the class with the given parameters.
@@ -70,14 +71,16 @@ export class ANnDspComponent implements NnDspComponentControl {
 	 * @param {number|string} id - The unique identifier for the component.
 	 * @param {string} componentType - The type of the component.
 	 * @param {WebSocketCommunication} webSocket - The instance of WebSocket communication to be used.
+	 * @param {DesignUtil} designUtil - Device design util.
 	 * @param {NnLoggerConfig} loggerConfig - The configuration for logging.
 	 */
-	constructor(id: number | string, componentType: string, webSocket: WebSocketCommunication, loggerConfig: NnLoggerConfig) {
+	constructor(id: number | string, componentType: string, webSocket: WebSocketCommunication, designUtil: DesignUtil, loggerConfig: NnLoggerConfig) {
 		this.id = id;
 		this.componentId = `${id}`;
 		this.componentType = componentType;
 		this.webSocket = webSocket;
 		this.loggerConfig = loggerConfig;
+		this.designUtil = designUtil;
 	}
 
 	/**
@@ -203,15 +206,15 @@ export class ANnDspComponent implements NnDspComponentControl {
 		}
 
 		try {
-			await this.webSocket.sendEventWithResponse<INnounceClientResultEvent, RuntimeUpdateEvent>(createRuntimeUpdateEvent(data));
+			await this.webSocket.sendEventWithResponse<RuntimeUpdateEvent, INnounceClientResultEvent>(createRuntimeUpdateEvent(data));
 			this.loggerConfig.isEnabledInternal() && logger.debug("Runtime component with ID '{}' of type '{}' was successfully updated", this.componentId, this.componentType);
-		} catch(e) {
+		} catch (e) {
 			await notChangedCallback(e);
 		}
 	}
 
 	private async getMostRecentlyNpdComponentData(id: number | string, type: string): Promise<null | NpdComponentMetadata> {
-		if (await DesignUtil.loadDesign(this.webSocket) == null) {
+		if (await this.designUtil.loadDesign() == null) {
 			return null;
 		}
 
@@ -219,26 +222,27 @@ export class ANnDspComponent implements NnDspComponentControl {
 	}
 
 	private getNpdComponentData(id: number | string, type: string) {
-		if (DesignUtil.designMetadata.partialDesign == null) {
+		if (this.designUtil.getDesignMetadata().partialDesign == null) {
 			return null;
 		}
 
-		this.componentId = DesignUtil.getComponentId(DesignUtil.designMetadata.partialDesign, id);
+		const partialDesign = this.designUtil.getDesignMetadata().partialDesign;
+		this.componentId = DesignUtil.getComponentId(partialDesign, id);
 
-		const npdComponentConfig =  DesignUtil.designMetadata.partialDesign.runtime?.[this.componentId] ?? null;
+		const npdComponentConfig = partialDesign.runtime?.[this.componentId] ?? null;
 
 		if (npdComponentConfig?.type === type) {
-			return new NpdComponentMetadata(npdComponentConfig,  DesignUtil.designMetadata.partialDesign.runtime, DesignUtil.designMetadata.partialDesign.metadata);
+			return new NpdComponentMetadata(npdComponentConfig, partialDesign.runtime, partialDesign.metadata);
 		}
 
 		let available: string[] = [];
-		if ( DesignUtil.designMetadata.partialDesign.runtime) {
-			available = Object.entries( DesignUtil.designMetadata.partialDesign.runtime)
+		if (partialDesign.runtime) {
+			available = Object.entries(partialDesign.runtime)
 				.filter(entry => entry[1].type === type)
 				.map(entry => entry[0]);
 		}
 		const identifierText = id === this.componentId ? "name" : "ID";
-		logger.error("Cannot find runtime {} component with {} '{}'. Available IDs are {}", type,  identifierText, this.componentId, available.join(", "));
+		logger.error("Cannot find runtime {} component with {} '{}'. Available IDs are {}", type, identifierText, this.componentId, available.join(", "));
 		return null;
 	}
 }
