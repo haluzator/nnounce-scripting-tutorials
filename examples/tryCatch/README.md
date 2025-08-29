@@ -77,6 +77,7 @@ The script will fail, crash and will be restarted. You will see the error in scr
             // Fallback to default value
             userDefinedVar = "defaultValue";
        }
+       
        // rest of the code...
        ```
    2. using `.then()` and `.catch()`
@@ -105,6 +106,8 @@ The script will fail, crash and will be restarted. You will see the error in scr
             // Fallback to default value
             userDefinedVar = "defaultValue";
         });
+      
+      // rest of the code
        ```
 
       
