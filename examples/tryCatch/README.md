@@ -109,7 +109,3 @@ The script will fail, crash and will be restarted. You will see the error in scr
       
       // rest of the code
        ```
-
-      
-
- 

@@ -15,7 +15,7 @@ When you set environment properties `HOSTNAME` and `API_KEY`, the code to connec
 
 ```typescript
 // import the function used to connect to nnounce device
-import { nnounceDevice } from "nnounceDevice";
+import { nnounceDevice } from "jsr:@nnounce/scripting-api";
 
 // now you have two options, how to use the function: 
 
@@ -81,7 +81,7 @@ In that case, the code looks as follows:
 
 ```typescript
 // import the function used to connect to nnounce device
-import { connectDevice } from "nnounceConnector";
+import { connectDevice } from "jsr:@nnounce/scripting-api";;
 
 // now you have two options, how to use the function: 
 
@@ -100,5 +100,3 @@ const device = await connectDevice("hostnameOrIp", "apiKeyCanBeNull").connection
 ## Sample VS Code workspace
 Sample workspace is prepared to connect to nnounce device using the environment properties read by Deno runtime from `.env` file. 
 Please fill in this file with your nnounce device hostname and API key if needed.
-
-This workspace needs SDK to be present in relative position as is in this repository. If the SDK is located somewhere else, please modify file `import_map.json` and `deno.json`.

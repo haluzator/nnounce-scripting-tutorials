@@ -14,8 +14,9 @@ You will also find guidelines for Visual Studio Code environment setup [there](s
     - [Managing a single nnounce device](examples/singleDevice/README.md).
     - [Managing multiple nnounce devices](examples/multipleDevices/README.md).
   - There are also [examples for error handling and how to use try...catch statement](examples/tryCatch/README.md) in your code
-- **SDK** folder contains the nnounce scripting SDK itself, so you can use it in your own projects.
 - **img** folder contains all images used in tutorials and guidelines
+
+Sources for scripting SDK can be found on Github at [https://github.com/nnounce/scripting-api](https://github.com/nnounce/scripting-api)
 
 ---
 

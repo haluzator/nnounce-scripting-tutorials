@@ -29,7 +29,7 @@ To enable scripting on nnounce devices from Visual Studio Code, follow these ste
     1. Go to **Extensions** tab and search for Deno
     2. Install extension  
        ![Deno extension installation](../img/vsCodeSetup/install_deno.png)
-1. Download entire scripting demo project or particular snippets subfolder. In that case you will also need the SDK folder.
+1. Download entire scripting demo project or particular snippets subfolder.
 1. Setup environment properties
    1. If you downloaded entire scripting demo project, open `cmd`, navigate to `snippets` folder and run provided `setup.ts` script with deno command
    ```
@@ -43,8 +43,7 @@ To enable scripting on nnounce devices from Visual Studio Code, follow these ste
     HOSTNAME=
     API_KEY=
     ```
-1. Open any snippet project by clicking **File -> Open Workspace from File...** and navigate to file with `.code-workspace` extension.
-1. (Optional) If you downloaded snippets folder and SDK folder to different relative paths than original, modify files `import_map.json` and `deno.json` and update paths to `SDK` folder. 
+1. Open any snippet project by clicking **File -> Open Workspace from File...** and navigate to file with `.code-workspace` extension. 
 1. Select the launch configuration you are interested in and click Start Debugging or press F5.
     ![Run Luanch Configuration](../img/vsCodeSetup/run.png)
 

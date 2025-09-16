@@ -1,5 +1,5 @@
 // import the connect function
-import { connectDevice } from "nnounceConnector";
+import { connectDevice } from "jsr:@nnounce/scripting-api";
 
 // connect devices
 const ampnode =  connectDevice("ampnode4-900094", null);

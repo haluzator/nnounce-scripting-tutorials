@@ -12,7 +12,7 @@ Every connected device needs to be assigned to separate variable.
 
 ```typescript
 // import the function used to connect to nnounce device
-import { connectDevice } from "nnounceConnector";
+import { connectDevice } from "jsr:@nnounce/scripting-api";
 
 // now you have two options, how to use the function: 
 
@@ -33,5 +33,3 @@ More on API keys can be found in the nnounce configuration guide at [https://doc
 
 ## Sample VS Code workspace
 Sample workspace is prepared to connect to multiple nnounce devices.
-
-This workspace needs SDK to be present in relative position as is in this repository. If the SDK is located somewhere else, please modify file `import_map.json` and `deno.json`.
